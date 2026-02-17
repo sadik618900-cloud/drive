@@ -6,55 +6,61 @@
 body{
   font-family: Arial;
   margin:0;
-  background:#f2f2f2;
+  background:#f4f6f9;
 }
 
 h2{
-  padding:15px;
+  padding:20px;
 }
 
 iframe.folder{
   width:100%;
-  height:350px;
+  height:300px;
   border:none;
 }
 
 .search{
-  padding:15px;
+  padding:20px;
 }
 
 input{
-  padding:8px;
+  padding:10px;
   width:100%;
   max-width:400px;
+  border-radius:6px;
+  border:1px solid #ccc;
 }
 
 .files{
-  padding:15px;
+  padding:20px;
+  display:grid;
+  grid-template-columns: repeat(auto-fill,minmax(250px,1fr));
+  gap:20px;
 }
 
 .card{
   background:white;
   padding:15px;
-  margin-bottom:15px;
-  border-radius:10px;
-  box-shadow:0 2px 5px rgba(0,0,0,0.1);
+  border-radius:12px;
+  box-shadow:0 3px 10px rgba(0,0,0,0.1);
+}
+
+.card h3{
+  font-size:16px;
+  margin:10px 0;
+}
+
+.preview img{
+  width:100%;
+  border-radius:8px;
 }
 
 button{
-  padding:6px 12px;
+  margin-top:10px;
+  padding:8px 12px;
+  border:none;
+  border-radius:6px;
   cursor:pointer;
-  margin-top:8px;
-}
-
-img{
-  max-width:200px;
-  margin-top:10px;
-}
-
-video{
-  max-width:300px;
-  margin-top:10px;
 }
 </style>
 </head>
@@ -71,28 +77,28 @@ src="https://drive.google.com/embeddedfolderview?id=1KHCBi0YJlQJOGS4V9P-pHnHHLpN
 <input type="text" id="search" placeholder="Search file..." onkeyup="searchFile()">
 </div>
 
-<div class="files" id="fileList">
+<div class="files">
 
-<!-- File 1 -->
-<div class="card file" data-name="File 1">
-<h3>File 1</h3>
+<!-- Image File -->
+<div class="card file" data-name="1.png">
+<div class="preview">
+<img src="https://drive.google.com/thumbnail?id=1vJz24f2Pf0M1QD735oXmmy2IDAbP7YCv&sz=w800">
+</div>
+<h3>1.png</h3>
 <a href="https://drive.google.com/uc?export=download&id=1vJz24f2Pf0M1QD735oXmmy2IDAbP7YCv" target="_blank">
 <button>Download</button>
 </a>
-<br>
-<img src="https://drive.google.com/uc?export=view&id=1vJz24f2Pf0M1QD735oXmmy2IDAbP7YCv">
 </div>
 
-<!-- File 2 -->
-<div class="card file" data-name="File 2">
-<h3>File 2</h3>
+<!-- Video File -->
+<div class="card file" data-name="video.mp4">
+<div class="preview">
+<img src="https://drive.google.com/thumbnail?id=1u-ffiBk81RaE77hufiZwwwc2R0YMWfX1&sz=w800">
+</div>
+<h3>video.mp4</h3>
 <a href="https://drive.google.com/uc?export=download&id=1u-ffiBk81RaE77hufiZwwwc2R0YMWfX1" target="_blank">
 <button>Download</button>
 </a>
-<br>
-<video controls>
-<source src="https://drive.google.com/uc?export=preview&id=1u-ffiBk81RaE77hufiZwwwc2R0YMWfX1">
-</video>
 </div>
 
 </div>

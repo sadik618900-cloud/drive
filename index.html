@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>f Software | Cloud Drive</title>
+<title>f Software | Dashboard</title>
 
 <style>
 *{
@@ -13,7 +13,7 @@ box-sizing:border-box;
 }
 
 body{
-font-family: 'Segoe UI', sans-serif;
+font-family:'Segoe UI',sans-serif;
 background:#0f172a;
 color:white;
 display:flex;
@@ -22,21 +22,20 @@ min-height:100vh;
 
 /* SIDEBAR */
 .sidebar{
-width:240px;
+width:230px;
 background:#111827;
 padding:25px 20px;
 display:flex;
 flex-direction:column;
-gap:20px;
+gap:15px;
 border-right:1px solid rgba(255,255,255,0.05);
 }
 
 .logo{
 font-size:22px;
 font-weight:bold;
-letter-spacing:1px;
-margin-bottom:20px;
 color:#38bdf8;
+margin-bottom:15px;
 }
 
 .menu button{
@@ -62,25 +61,20 @@ background:#2563eb;
 color:#fff;
 }
 
-/* MAIN AREA */
+/* MAIN */
 .main{
 flex:1;
+padding:25px;
 display:flex;
 flex-direction:column;
-padding:20px;
 }
 
-/* TOP BAR */
+/* HEADER */
 .topbar{
 display:flex;
 justify-content:space-between;
 align-items:center;
 margin-bottom:20px;
-}
-
-.breadcrumb{
-font-size:14px;
-color:#94a3b8;
 }
 
 .profile{
@@ -96,22 +90,42 @@ height:100%;
 object-fit:cover;
 }
 
-/* DRIVE CARD */
-.drive-card{
+/* CONTENT AREA */
+.content{
 flex:1;
 background:#1e293b;
 border-radius:20px;
-padding:20px;
+padding:30px;
 box-shadow:0 20px 40px rgba(0,0,0,0.4);
 position:relative;
+overflow:hidden;
 }
 
+/* DASHBOARD TEXT */
+.dashboard{
+text-align:center;
+margin-top:50px;
+}
+
+.dashboard h1{
+font-size:32px;
+margin-bottom:15px;
+color:#38bdf8;
+}
+
+.dashboard p{
+color:#94a3b8;
+font-size:15px;
+}
+
+/* DRIVE VIEW */
 iframe{
 width:100%;
 height:100%;
 border:none;
 border-radius:15px;
 background:#fff;
+display:none;
 }
 
 /* LOADER */
@@ -149,31 +163,19 @@ animation:spin 1s linear infinite;
 
 /* MOBILE */
 @media(max-width:768px){
-
-body{
-flex-direction:column;
-}
-
+body{flex-direction:column;}
 .sidebar{
 width:100%;
 flex-direction:row;
 overflow-x:auto;
-gap:10px;
 }
-
 .menu{
 display:flex;
 gap:10px;
 }
-
 .menu button{
 white-space:nowrap;
 }
-
-.main{
-padding:15px;
-}
-
 }
 </style>
 </head>
@@ -184,7 +186,8 @@ padding:15px;
 <div class="logo">f Software</div>
 
 <div class="menu">
-<button class="active" onclick="changeFolder('photos')" id="btnPhotos">📸 Photos</button>
+<button class="active" onclick="showDashboard()" id="btnDashboard">🏠 Dashboard</button>
+<button onclick="changeFolder('photos')" id="btnPhotos">📸 Photos</button>
 <button onclick="changeFolder('videos')" id="btnVideos">🎥 Videos</button>
 <button onclick="changeFolder('other')" id="btnOther">📁 Other</button>
 <button onclick="changeFolder('madrasah')" id="btnMadrasah">📚 Madrasah</button>
@@ -194,18 +197,22 @@ padding:15px;
 <div class="main">
 
 <div class="topbar">
-<div class="breadcrumb">Home / Drive / <span id="currentFolder">Photos</span></div>
+<div>Welcome</div>
 <div class="profile">
 <img src="profile.png">
 </div>
 </div>
 
-<div class="drive-card">
+<div class="content">
 
-<iframe id="driveIframe"
-src="https://drive.google.com/embeddedfolderview?id=1Td0P4syxyk7khNQlTiWFraBr-WcY4hjk#grid"
-onload="hideLoader()">
-</iframe>
+<!-- DASHBOARD -->
+<div class="dashboard" id="dashboardSection">
+<h1>Welcome to f Software Cloud</h1>
+<p>Select a section from the left menu to view your files.</p>
+</div>
+
+<!-- DRIVE IFRAME -->
+<iframe id="driveIframe"></iframe>
 
 <div class="loading" id="loading">
 <div class="loader"></div>
@@ -223,27 +230,38 @@ other:'1oCWcDaL2TbCPYbiqxvhYrjTjopssgX8U',
 madrasah:'1T_xsdXiREw7Lo15fXEpnIQUuIGUbjFwM'
 };
 
-function changeFolder(key){
+function resetActive(){
 document.querySelectorAll('.menu button').forEach(btn=>btn.classList.remove('active'));
+}
+
+function showDashboard(){
+resetActive();
+document.getElementById('btnDashboard').classList.add('active');
+
+document.getElementById('dashboardSection').style.display="block";
+document.getElementById('driveIframe').style.display="none";
+}
+
+function changeFolder(key){
+resetActive();
 document.getElementById('btn'+key.charAt(0).toUpperCase()+key.slice(1)).classList.add('active');
 
-document.getElementById('currentFolder').textContent=
-key.charAt(0).toUpperCase()+key.slice(1);
+document.getElementById('dashboardSection').style.display="none";
+
+const iframe=document.getElementById('driveIframe');
+iframe.style.display="block";
 
 showLoader();
-document.getElementById('driveIframe').src=
-`https://drive.google.com/embeddedfolderview?id=${folders[key]}#grid`;
+iframe.src=`https://drive.google.com/embeddedfolderview?id=${folders[key]}#grid`;
 }
 
 function showLoader(){
 document.getElementById('loading').classList.add('active');
 }
 
-function hideLoader(){
+document.getElementById('driveIframe').onload=function(){
 document.getElementById('loading').classList.remove('active');
-}
-
-showLoader();
+};
 </script>
 
 </body>

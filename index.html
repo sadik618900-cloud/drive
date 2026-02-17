@@ -6,15 +6,21 @@
 body{
   font-family: Arial;
   margin:0;
-  background:#f5f5f5;
+  background:#f2f2f2;
 }
 
 h2{
   padding:15px;
 }
 
+iframe.folder{
+  width:100%;
+  height:350px;
+  border:none;
+}
+
 .search{
-  padding:10px 15px;
+  padding:15px;
 }
 
 input{
@@ -27,37 +33,34 @@ input{
   padding:15px;
 }
 
-.file{
+.card{
   background:white;
-  padding:10px;
-  margin:10px 0;
-  border-radius:8px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
+  padding:15px;
+  margin-bottom:15px;
+  border-radius:10px;
+  box-shadow:0 2px 5px rgba(0,0,0,0.1);
 }
 
 button{
-  padding:5px 10px;
+  padding:6px 12px;
   cursor:pointer;
+  margin-top:8px;
 }
 
-.preview img{
+img{
   max-width:200px;
-  display:block;
   margin-top:10px;
 }
 
-iframe.folder{
-  width:100%;
-  height:400px;
-  border:none;
+video{
+  max-width:300px;
+  margin-top:10px;
 }
 </style>
 </head>
 <body>
 
-<h2>🌍 Public Cloud</h2>
+<h2>🌍 f Cloud</h2>
 
 <!-- Folder View -->
 <iframe class="folder"
@@ -70,27 +73,25 @@ src="https://drive.google.com/embeddedfolderview?id=1KHCBi0YJlQJOGS4V9P-pHnHHLpN
 
 <div class="files" id="fileList">
 
-<!-- FILE 1 -->
-<div class="file" data-name="Image 1">
-<span>Image 1</span>
-<a href="https://drive.google.com/uc?export=download&id=FILE_ID_1" target="_blank">
+<!-- File 1 -->
+<div class="card file" data-name="File 1">
+<h3>File 1</h3>
+<a href="https://drive.google.com/uc?export=download&id=1vJz24f2Pf0M1QD735oXmmy2IDAbP7YCv" target="_blank">
 <button>Download</button>
 </a>
-</div>
-<div class="preview">
-<img src="https://drive.google.com/uc?export=view&id=FILE_ID_1">
+<br>
+<img src="https://drive.google.com/uc?export=view&id=1vJz24f2Pf0M1QD735oXmmy2IDAbP7YCv">
 </div>
 
-<!-- FILE 2 -->
-<div class="file" data-name="Video 1">
-<span>Video 1</span>
-<a href="https://drive.google.com/uc?export=download&id=FILE_ID_2" target="_blank">
+<!-- File 2 -->
+<div class="card file" data-name="File 2">
+<h3>File 2</h3>
+<a href="https://drive.google.com/uc?export=download&id=1u-ffiBk81RaE77hufiZwwwc2R0YMWfX1" target="_blank">
 <button>Download</button>
 </a>
-</div>
-<div class="preview">
-<video width="300" controls>
-<source src="https://drive.google.com/uc?export=preview&id=FILE_ID_2">
+<br>
+<video controls>
+<source src="https://drive.google.com/uc?export=preview&id=1u-ffiBk81RaE77hufiZwwwc2R0YMWfX1">
 </video>
 </div>
 
@@ -104,11 +105,9 @@ function searchFile(){
   files.forEach(file=>{
     let name = file.getAttribute("data-name").toLowerCase();
     if(name.includes(input)){
-      file.style.display="flex";
-      file.nextElementSibling.style.display="block";
+      file.style.display="block";
     }else{
       file.style.display="none";
-      file.nextElementSibling.style.display="none";
     }
   });
 }

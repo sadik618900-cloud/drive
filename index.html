@@ -1,64 +1,89 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>Sadik Cloud Pro</title>
-<script src="https://accounts.google.com/gsi/client" async defer></script>
-<style>
-body { font-family: Arial; background:#f4f6f9; padding:20px; }
-h2 { text-align:center; }
-.topbar { text-align:center; margin-bottom:20px; }
-button { padding:8px 14px; margin:5px; cursor:pointer; border:none; border-radius:6px; background:#007bff; color:white; }
-button:hover { background:#0056b3; }
-input[type="text"] { padding:8px; width:250px; border-radius:6px; border:1px solid #ccc; }
-.grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:15px; }
-.card {
-  background:white;
-  padding:15px;
-  border-radius:12px;
-  box-shadow:0 4px 10px rgba(0,0,0,0.08);
-}
-.card h4 { margin:0 0 8px 0; word-break:break-word; }
-.card small { color:gray; }
-.admin { margin-top:10px; }
-#dropZone {
-  border:2px dashed #007bff;
-  padding:30px;
-  border-radius:12px;
-  background:#eef5ff;
-  margin-top:20px;
-}
-#dropZone.hover { background:#d9eaff; }
-progress { width:100%; height:15px; margin-top:10px; }
-.dark { background:#1e1e1e; color:white; }
-.dark .card { background:#2c2c2c; }
-.dark input { background:#333; color:white; border:1px solid #555; }
-</style>
+  <title>Sadik Cloud</title>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="https://apis.google.com/js/api.js"></script>
+
+  <style>
+    body { font-family: Arial; text-align:center; background:#f5f7fb; }
+    h2 { margin-top:20px; }
+
+    #dropZone {
+      border:2px dashed #007bff;
+      padding:30px;
+      margin:20px auto;
+      width:400px;
+      border-radius:10px;
+      background:#fff;
+    }
+
+    #dropZone.hover {
+      background:#e3f0ff;
+    }
+
+    button {
+      padding:8px 15px;
+      margin:5px;
+      border:none;
+      background:#007bff;
+      color:white;
+      border-radius:5px;
+      cursor:pointer;
+    }
+
+    progress {
+      width:400px;
+      height:20px;
+    }
+
+    table {
+      margin:20px auto;
+      border-collapse:collapse;
+      width:80%;
+      background:white;
+    }
+
+    th, td {
+      border:1px solid #ddd;
+      padding:8px;
+    }
+
+    th {
+      background:#007bff;
+      color:white;
+    }
+  </style>
 </head>
+
 <body>
 
-<h2>☁ Sadik Cloud Pro</h2>
+<h2>Sadik Cloud Storage</h2>
 
-<div class="topbar">
-  <div id="loginDiv"></div>
-  <button id="logoutBtn" style="display:none;">Logout</button>
-  <button onclick="toggleDark()">Dark Mode</button>
-  <br><br>
-  <input type="text" id="searchBox" placeholder="Search file..." onkeyup="filterFiles()">
-</div>
+<div id="loginDiv"></div>
 
 <div id="uploadArea" style="display:none;">
   <div id="dropZone">
-    <p><b>Drag & Drop files here</b></p>
+    <p>Drag & Drop files here</p>
     <p>or</p>
     <input type="file" id="fileInput" multiple hidden>
-    <button onclick="fileInput.click()">Select Files</button>
-    <progress id="progressBar" value="0" max="100" style="display:none;"></progress>
+    <button onclick="document.getElementById('fileInput').click()">Select Files</button>
   </div>
+
+  <br>
+  <progress id="progressBar" value="0" max="100" style="display:none;"></progress>
 </div>
 
-<br>
-<div class="grid" id="fileList"></div>
+<table id="fileTable">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Size</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
 
 <script>
 
@@ -66,80 +91,69 @@ const CLIENT_ID = "616933700070-sgh79m0pe5gskbfsg57ok4fvedmg2dev.apps.googleuser
 const ADMIN_EMAIL = "sadik618900@gmail.com";
 const PUBLIC_FOLDER_ID = "1KHCBi0YJlQJOGS4V9P-pHnHHLpNrv_Y0";
 
-let accessToken = null;
-let userEmail = null;
-let allFiles = [];
+let accessToken;
+let userEmail;
+
+google.accounts.id.initialize({
+  client_id: CLIENT_ID,
+  callback: handleCredentialResponse
+});
+
+google.accounts.id.renderButton(
+  document.getElementById("loginDiv"),
+  { theme: "outline", size: "large" }
+);
 
 function handleCredentialResponse(response) {
   const decoded = JSON.parse(atob(response.credential.split('.')[1]));
   userEmail = decoded.email;
-  accessToken = response.credential;
 
-  if (userEmail === ADMIN_EMAIL) {
-    document.getElementById("uploadArea").style.display = "block";
-  }
+  gapi.load('client', async () => {
+    await gapi.client.init({
+      discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"]
+    });
 
-  document.getElementById("logoutBtn").style.display = "inline-block";
-  document.getElementById("loginDiv").style.display = "none";
+    const tokenClient = google.accounts.oauth2.initTokenClient({
+      client_id: CLIENT_ID,
+      scope: 'https://www.googleapis.com/auth/drive',
+      callback: (tokenResponse) => {
+        accessToken = tokenResponse.access_token;
+        listFiles();
 
-  listFiles();
+        if (userEmail === ADMIN_EMAIL) {
+          document.getElementById("uploadArea").style.display = "block";
+        }
+      }
+    });
+
+    tokenClient.requestAccessToken();
+  });
 }
 
 async function listFiles() {
-  const res = await fetch(
-    `https://www.googleapis.com/drive/v3/files?q='${PUBLIC_FOLDER_ID}'+in+parents&fields=files(id,name,size)`,
-    { headers: { Authorization: `Bearer ${accessToken}` } }
-  );
+  const res = await gapi.client.drive.files.list({
+    q: `'${PUBLIC_FOLDER_ID}' in parents and trashed=false`,
+    fields: "files(id,name,size)"
+  });
 
-  const data = await res.json();
-  allFiles = data.files || [];
-  renderFiles(allFiles);
-}
+  const tbody = document.querySelector("#fileTable tbody");
+  tbody.innerHTML = "";
 
-function renderFiles(files) {
-  const container = document.getElementById("fileList");
-  container.innerHTML = "";
+  res.result.files.forEach(file => {
+    const sizeKB = file.size ? (file.size/1024).toFixed(2)+" KB" : "—";
 
-  if (files.length === 0) {
-    container.innerHTML = "<p>No files found.</p>";
-    return;
-  }
-
-  files.forEach(file => {
-    const size = file.size ? (file.size / 1024 / 1024).toFixed(2) + " MB" : "";
-    const div = document.createElement("div");
-    div.className = "card";
-
-    div.innerHTML = `
-      <h4>${file.name}</h4>
-      <small>${size}</small><br><br>
-      <a href="https://drive.google.com/file/d/${file.id}/view" target="_blank">Download</a>
-      ${userEmail === ADMIN_EMAIL ? `
-        <div class="admin">
-          <button onclick="deleteFile('${file.id}')">Delete</button>
-        </div>` : ``}
+    tbody.innerHTML += `
+      <tr>
+        <td>${file.name}</td>
+        <td>${sizeKB}</td>
+        <td>
+          <a href="https://drive.google.com/uc?id=${file.id}&export=download" target="_blank">
+            <button>Download</button>
+          </a>
+        </td>
+      </tr>
     `;
-    container.appendChild(div);
   });
-}
-
-function filterFiles() {
-  const keyword = document.getElementById("searchBox").value.toLowerCase();
-  const filtered = allFiles.filter(file =>
-    file.name.toLowerCase().includes(keyword)
-  );
-  renderFiles(filtered);
-}
-
-async function deleteFile(id) {
-  if (!confirm("Delete file?")) return;
-
-  await fetch(`https://www.googleapis.com/drive/v3/files/${id}`, {
-    method: "DELETE",
-    headers: { Authorization: `Bearer ${accessToken}` }
-  });
-
-  listFiles();
 }
 
 const dropZone = document.getElementById("dropZone");
@@ -150,26 +164,27 @@ dropZone.addEventListener("dragover", e => {
   e.preventDefault();
   dropZone.classList.add("hover");
 });
+
 dropZone.addEventListener("dragleave", () => {
   dropZone.classList.remove("hover");
 });
+
 dropZone.addEventListener("drop", e => {
   e.preventDefault();
   dropZone.classList.remove("hover");
   uploadFiles(e.dataTransfer.files);
 });
+
 fileInput.addEventListener("change", () => {
   uploadFiles(fileInput.files);
 });
 
-async function uploadFiles(files) {
-  for (let file of files) {
-    await uploadSingleFile(file);
-  }
-  listFiles();
+function uploadFiles(files) {
+  Array.from(files).forEach(file => uploadFile(file));
 }
 
-async function uploadSingleFile(file) {
+function uploadFile(file) {
+
   progressBar.style.display = "block";
   progressBar.value = 0;
 
@@ -186,38 +201,22 @@ async function uploadSingleFile(file) {
   xhr.open("POST", "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart");
   xhr.setRequestHeader("Authorization", "Bearer " + accessToken);
 
-  xhr.upload.onprogress = function(e) {
-    if (e.lengthComputable) {
-      progressBar.value = (e.loaded / e.total) * 100;
+  xhr.upload.onprogress = function(event) {
+    if (event.lengthComputable) {
+      progressBar.value = (event.loaded / event.total) * 100;
     }
   };
 
   xhr.onload = function() {
     progressBar.value = 100;
-    setTimeout(()=> progressBar.style.display="none", 1000);
+    setTimeout(()=>progressBar.style.display="none",1000);
+    listFiles();
   };
 
   xhr.send(form);
 }
 
-function toggleDark() {
-  document.body.classList.toggle("dark");
-}
-
-document.getElementById("logoutBtn").onclick = () => location.reload();
-
-window.onload = () => {
-  google.accounts.id.initialize({
-    client_id: CLIENT_ID,
-    callback: handleCredentialResponse
-  });
-
-  google.accounts.id.renderButton(
-    document.getElementById("loginDiv"),
-    { theme: "outline", size: "large" }
-  );
-};
-
 </script>
+
 </body>
 </html>

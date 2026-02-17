@@ -11,7 +11,7 @@
 body{
   font-family:Arial;
   margin:0;
-  background:#f4f6fb;
+  background:#f3f4f6;
   text-align:center;
 }
 header{
@@ -19,40 +19,37 @@ header{
   color:white;
   padding:15px;
 }
-button{
-  padding:8px 14px;
-  border:none;
-  border-radius:6px;
-  cursor:pointer;
-  margin:5px;
-}
-.primary{background:#2563eb;color:white;}
-.danger{background:#dc2626;color:white;}
 .card{
   background:white;
-  margin:10px auto;
+  margin:15px auto;
   padding:15px;
   width:90%;
-  max-width:600px;
-  border-radius:10px;
-  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+  max-width:650px;
+  border-radius:12px;
+  box-shadow:0 2px 8px rgba(0,0,0,0.1);
   text-align:left;
 }
-#uploadBox{
-  border:2px dashed #2563eb;
-  padding:25px;
-  border-radius:10px;
-  margin:20px auto;
-  width:90%;
-  max-width:500px;
-}
-#uploadBox.hover{background:#e0e7ff;}
-.dark{
-  background:#0f172a;
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:6px;
+  background:#2563eb;
   color:white;
+  cursor:pointer;
 }
-.dark .card{background:#1e293b;color:white;}
-.dark header{background:#000;}
+input{
+  padding:8px;
+  width:80%;
+  max-width:400px;
+  margin:15px;
+  border-radius:6px;
+  border:1px solid #ccc;
+}
+img,video{
+  max-width:100%;
+  margin-top:10px;
+  border-radius:8px;
+}
 </style>
 </head>
 
@@ -60,23 +57,12 @@ button{
 
 <header>
   <h2>🚀 f Cloud</h2>
-  <button onclick="toggleDark()">🌙 Toggle Mode</button>
-  <button onclick="logout()" class="danger">Logout</button>
 </header>
 
 <br>
+
 <div id="loginBtn"></div>
 
-<div id="adminArea" style="display:none;">
-  <div id="uploadBox">
-    <p>Drag & Drop Files</p>
-    <input type="file" id="fileInput" multiple hidden>
-    <button class="primary" onclick="fileInput.click()">Select Files</button>
-  </div>
-  <progress id="progressBar" value="0" max="100" style="width:90%;max-width:500px;display:none;"></progress>
-</div>
-
-<br>
 <input type="text" id="search" placeholder="Search file..." onkeyup="filterFiles()">
 
 <div id="fileList"></div>
@@ -84,10 +70,8 @@ button{
 <script>
 
 const CLIENT_ID="616933700070-sgh79m0pe5gskbfsg57ok4fvedmg2dev.apps.googleusercontent.com";
-const ADMIN_EMAIL="sadik618900@gmail.com";
 const FOLDER_ID="1KHCBi0YJlQJOGS4V9P-pHnHHLpNrv_Y0";
 
-let accessToken;
 let allFiles=[];
 
 google.accounts.id.initialize({
@@ -100,9 +84,7 @@ google.accounts.id.renderButton(
   {theme:"outline",size:"large"}
 );
 
-function handleLogin(response){
-  const user=JSON.parse(atob(response.credential.split('.')[1]));
-  const email=user.email;
+function handleLogin(){
 
   gapi.load("client",async()=>{
     await gapi.client.init({
@@ -111,15 +93,13 @@ function handleLogin(response){
 
     const tokenClient=google.accounts.oauth2.initTokenClient({
       client_id:CLIENT_ID,
-      scope:"https://www.googleapis.com/auth/drive.file",
+      scope:"https://www.googleapis.com/auth/drive.readonly",
       callback:(res)=>{
-        accessToken=res.access_token;
+        gapi.client.setToken(res);
         listFiles();
-        if(email===ADMIN_EMAIL){
-          document.getElementById("adminArea").style.display="block";
-        }
       }
     });
+
     tokenClient.requestAccessToken();
   });
 }
@@ -137,14 +117,27 @@ async function listFiles(){
 function renderFiles(files){
   const container=document.getElementById("fileList");
   container.innerHTML="";
+
   files.forEach(file=>{
     const size=file.size?(file.size/1024).toFixed(1)+" KB":"—";
+
+    let preview="";
+
+    if(file.mimeType.startsWith("image/")){
+      preview=`<img src="https://drive.google.com/uc?id=${file.id}">`;
+    }
+    else if(file.mimeType.startsWith("video/")){
+      preview=`<video controls src="https://drive.google.com/uc?id=${file.id}"></video>`;
+    }
+
     container.innerHTML+=`
       <div class="card">
         <b>${file.name}</b><br>
-        Size: ${size}<br><br>
+        Size: ${size}<br>
+        ${preview}
+        <br><br>
         <a href="https://drive.google.com/uc?id=${file.id}&export=download" target="_blank">
-          <button class="primary">Download</button>
+          <button>Download</button>
         </a>
       </div>
     `;
@@ -157,69 +150,7 @@ function filterFiles(){
   renderFiles(filtered);
 }
 
-const uploadBox=document.getElementById("uploadBox");
-const fileInput=document.getElementById("fileInput");
-const progressBar=document.getElementById("progressBar");
-
-uploadBox.addEventListener("dragover",e=>{
-  e.preventDefault();
-  uploadBox.classList.add("hover");
-});
-uploadBox.addEventListener("dragleave",()=>{
-  uploadBox.classList.remove("hover");
-});
-uploadBox.addEventListener("drop",e=>{
-  e.preventDefault();
-  uploadBox.classList.remove("hover");
-  uploadFiles(e.dataTransfer.files);
-});
-fileInput.addEventListener("change",()=>{
-  uploadFiles(fileInput.files);
-});
-
-function uploadFiles(files){
-  Array.from(files).forEach(uploadFile);
-}
-
-function uploadFile(file){
-  progressBar.style.display="block";
-  progressBar.value=0;
-
-  const metadata={
-    name:file.name,
-    parents:[FOLDER_ID]
-  };
-
-  const form=new FormData();
-  form.append("metadata",new Blob([JSON.stringify(metadata)],{type:"application/json"}));
-  form.append("file",file);
-
-  const xhr=new XMLHttpRequest();
-  xhr.open("POST","https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart");
-  xhr.setRequestHeader("Authorization","Bearer "+accessToken);
-
-  xhr.upload.onprogress=e=>{
-    if(e.lengthComputable){
-      progressBar.value=(e.loaded/e.total)*100;
-    }
-  };
-
-  xhr.onload=()=>{
-    progressBar.style.display="none";
-    listFiles();
-  };
-
-  xhr.send(form);
-}
-
-function toggleDark(){
-  document.body.classList.toggle("dark");
-}
-
-function logout(){
-  location.reload();
-}
-
 </script>
+
 </body>
 </html>

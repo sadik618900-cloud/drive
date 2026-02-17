@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Drive Dashboard</title>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="https://apis.google.com/js/api.js"></script>
+</head>
+<body>
+  <h2>Drive Dashboard</h2>
+
+  <div id="loginDiv"></div>
+  <button id="uploadBtn" style="display:none;">Upload File</button>
+
+  <script>
+    const CLIENT_ID = "616933700070-sgh79m0pe5gskbfsg57ok4fvedmg2dev.apps.googleusercontent.com";
+    const API_KEY = "";
+    const DISCOVERY_DOC = "https://www.googleapis.com/discovery/v1/apis/drive/v3/rest";
+    const SCOPES = "https://www.googleapis.com/auth/drive.file";
+
+    let tokenClient;
+    let accessToken = null;
+    const adminEmail = "sadik618900@gmail.com"; // তোমার Gmail
+
+    function gapiLoaded() {
+      gapi.load('client', initializeGapiClient);
+    }
+
+    async function initializeGapiClient() {
+      await gapi.client.init({
+        discoveryDocs: [DISCOVERY_DOC],
+      });
+    }
+
+    function handleCredentialResponse(response) {
+      accessToken = response.credential;
+      document.getElementById("uploadBtn").style.display = "block";
+    }
+
+    window.onload = function () {
+      google.accounts.id.initialize({
+        client_id: CLIENT_ID,
+        callback: handleCredentialResponse
+      });
+
+      google.accounts.id.renderButton(
+        document.getElementById("loginDiv"),
+        { theme: "outline", size: "large" }
+      );
+    };
+  </script>
+</body>
+</html>

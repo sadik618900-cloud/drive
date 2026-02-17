@@ -181,6 +181,46 @@
             font-weight: bold;
         }
 
+        /* Navigation Links - নতুন স্টাইল */
+        .nav-links {
+            display: flex;
+            gap: 15px;
+            margin-left: auto;
+            margin-right: 20px;
+        }
+
+        .nav-link {
+            padding: 10px 20px;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            backdrop-filter: blur(5px);
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-link.active {
+            background: linear-gradient(135deg, #4CAF50, #f44336);
+            border-color: transparent;
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .nav-link i {
+            font-size: 18px;
+        }
+
         /* Main Container */
         .container {
             flex: 1;
@@ -230,7 +270,7 @@
             padding: 20px;
             border: 1px solid rgba(255, 255, 255, 0.2);
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
-            height: calc(100vh - 200px);
+            height: calc(100vh - 250px);
             position: relative;
             overflow: hidden;
         }
@@ -286,7 +326,6 @@
         .stat-dot {
             width: 10px;
             height: 10px;
-            background: #4ECDC4;
             border-radius: 50%;
             box-shadow: 0 0 15px currentColor;
         }
@@ -336,7 +375,8 @@
             }
 
             .nav-container {
-                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 10px;
             }
 
             .logo-text {
@@ -359,8 +399,15 @@
                 height: 40px;
             }
 
+            .nav-links {
+                order: 3;
+                width: 100%;
+                justify-content: center;
+                margin: 10px 0 0 0;
+            }
+
             .drive-card {
-                height: calc(100vh - 250px);
+                height: calc(100vh - 300px);
                 padding: 15px;
             }
 
@@ -425,11 +472,23 @@
                 </div>
             </div>
             
-            <!-- ইউজার প্রোফাইল ইমেজ - আপনার ছবি এখানে দেখাবে -->
+            <!-- নতুন নেভিগেশন বাটন - ৩টি পেজ -->
+            <div class="nav-links">
+                <button class="nav-link active" onclick="changeFolder('photos')" id="btnPhotos">
+                    <span>📸</span> Photos
+                </button>
+                <button class="nav-link" onclick="changeFolder('videos')" id="btnVideos">
+                    <span>🎥</span> Videos
+                </button>
+                <button class="nav-link" onclick="changeFolder('other')" id="btnOther">
+                    <span>📁</span> Other Files
+                </button>
+            </div>
+            
+            <!-- ইউজার প্রোফাইল ইমেজ -->
             <div class="user-menu">
                 <div class="user-profile" id="userProfile" title="User Profile" onclick="alert('User Profile Clicked!')">
-                    <!-- ইমেজ লোড হবে এখানে। ইমেজ না থাকলে ডিফল্ট আইকন দেখাবে -->
-                    <img src="profile.png" alt="Profile" onerror="this.style.display='none'; document.getElementById('defaultAvatar').style.display='flex';">
+                    <img src="profile.jpg" alt="Profile" onerror="this.style.display='none'; document.getElementById('defaultAvatar').style.display='flex';">
                     <div class="default-avatar" id="defaultAvatar" style="display: none;">
                         <span>👤</span>
                     </div>
@@ -441,18 +500,19 @@
     <!-- Main Content -->
     <div class="container">
         <!-- Breadcrumb -->
-        <div class="breadcrumb">
+        <div class="breadcrumb" id="breadcrumb">
             <a href="#">Home</a>
             <i>→</i>
             <a href="#">Drive</a>
             <i>→</i>
-            <span>f Software Cloud</span>
+            <span id="currentFolder">Photos</span>
         </div>
 
         <!-- Drive Viewer Card -->
         <div class="drive-card">
             <iframe 
-                src="https://drive.google.com/embeddedfolderview?id=1KHCBi0YJlQJOGS4V9P-pHnHHLpNrv_Y0#grid" 
+                id="driveIframe"
+                src="https://drive.google.com/embeddedfolderview?id=1Td0P4syxyk7khNQlTiWFraBr-WcY4hjk#grid" 
                 title="Google Drive Folder"
                 loading="lazy"
                 onload="hideLoader()">
@@ -465,14 +525,14 @@
         </div>
 
         <!-- Stats Bar -->
-        <div class="stats">
+        <div class="stats" id="stats">
             <div class="stat-item">
-                <span class="stat-dot" style="background: #4CAF50; box-shadow: 0 0 10px #4CAF50;"></span>
-                <span>Connected to Google Drive</span>
+                <span class="stat-dot" style="background: #4CAF50;"></span>
+                <span id="fileCount">Loading...</span>
             </div>
             <div class="stat-item">
-                <span class="stat-dot" style="background: #f44336; box-shadow: 0 0 10px #f44336;"></span>
-                <span>Grid View Active</span>
+                <span class="stat-dot" style="background: #f44336;"></span>
+                <span id="folderStatus">Grid View Active</span>
             </div>
             <div class="stat-item">
                 <span class="stat-dot" style="background: #764ba2;"></span>
@@ -487,6 +547,42 @@
     </footer>
 
     <script>
+        // গুগল ড্রাইভ ফল্ডার আইডি গুলো
+        const folders = {
+            photos: '1Td0P4syxyk7khNQlTiWFraBr-WcY4hjk',
+            videos: '1Bkb60c7PLUTurVl0FoU2zq3GqxP2lHpI',
+            other: '1oCWcDaL2TbCPYbiqxvhYrjTjopssgX8U'
+        };
+
+        // ফল্ডার পরিবর্তন ফাংশন
+        function changeFolder(folderKey) {
+            const iframe = document.getElementById('driveIframe');
+            const folderId = folders[folderKey];
+            
+            // একটিভ বাটন আপডেট
+            document.querySelectorAll('.nav-link').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.getElementById(`btn${folderKey.charAt(0).toUpperCase() + folderKey.slice(1)}`).classList.add('active');
+            
+            // ব্রেডক্রম্ব আপডেট
+            const folderNames = {
+                photos: 'Photos',
+                videos: 'Videos',
+                other: 'Other Files'
+            };
+            document.getElementById('currentFolder').textContent = folderNames[folderKey];
+            
+            // স্ট্যাটাস আপডেট
+            document.getElementById('fileCount').textContent = `Loading ${folderNames[folderKey]}...`;
+            
+            // লোডার দেখাও
+            showLoader();
+            
+            // iframe src পরিবর্তন কর
+            iframe.src = `https://drive.google.com/embeddedfolderview?id=${folderId}#grid`;
+        }
+
         // Show loading overlay
         function showLoader() {
             document.getElementById('loadingOverlay').classList.add('active');
@@ -495,6 +591,11 @@
         // Hide loading overlay
         function hideLoader() {
             document.getElementById('loadingOverlay').classList.remove('active');
+            
+            // স্ট্যাটাস আপডেট কর
+            const activeBtn = document.querySelector('.nav-link.active');
+            const folderName = activeBtn ? activeBtn.textContent.trim() : 'Photos';
+            document.getElementById('fileCount').textContent = `Viewing ${folderName}`;
         }
 
         // Show loader when iframe starts loading
@@ -515,6 +616,26 @@
                     this.style.display = 'none';
                     document.getElementById('defaultAvatar').style.display = 'flex';
                 };
+            }
+            
+            // ইনিশিয়াল স্ট্যাটাস সেট কর
+            document.getElementById('fileCount').textContent = 'Viewing Photos';
+        });
+
+        // কিবোর্ড নেভিগেশন (অপশনাল)
+        document.addEventListener('keydown', function(e) {
+            if (e.altKey) {
+                switch(e.key) {
+                    case '1':
+                        changeFolder('photos');
+                        break;
+                    case '2':
+                        changeFolder('videos');
+                        break;
+                    case '3':
+                        changeFolder('other');
+                        break;
+                }
             }
         });
     </script>

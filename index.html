@@ -39,6 +39,9 @@ margin-bottom:15px;
 }
 
 .menu button{
+display:flex;
+align-items:center;
+gap:10px;
 width:100%;
 padding:12px;
 border:none;
@@ -49,6 +52,12 @@ text-align:left;
 cursor:pointer;
 transition:0.3s;
 font-size:14px;
+}
+
+.menu button svg{
+width:18px;
+height:18px;
+fill:currentColor;
 }
 
 .menu button:hover{
@@ -69,7 +78,6 @@ display:flex;
 flex-direction:column;
 }
 
-/* HEADER */
 .topbar{
 display:flex;
 justify-content:space-between;
@@ -90,7 +98,6 @@ height:100%;
 object-fit:cover;
 }
 
-/* CONTENT AREA */
 .content{
 flex:1;
 background:#1e293b;
@@ -101,10 +108,10 @@ position:relative;
 overflow:hidden;
 }
 
-/* DASHBOARD TEXT */
+/* DASHBOARD */
 .dashboard{
 text-align:center;
-margin-top:50px;
+margin-top:60px;
 }
 
 .dashboard h1{
@@ -118,7 +125,7 @@ color:#94a3b8;
 font-size:15px;
 }
 
-/* DRIVE VIEW */
+/* IFRAME */
 iframe{
 width:100%;
 height:100%;
@@ -186,11 +193,42 @@ white-space:nowrap;
 <div class="logo">f Software</div>
 
 <div class="menu">
-<button class="active" onclick="showDashboard()" id="btnDashboard">🏠 Dashboard</button>
-<button onclick="changeFolder('photos')" id="btnPhotos">📸 Photos</button>
-<button onclick="changeFolder('videos')" id="btnVideos">🎥 Videos</button>
-<button onclick="changeFolder('other')" id="btnOther">📁 Other</button>
-<button onclick="changeFolder('madrasah')" id="btnMadrasah">📚 Madrasah</button>
+
+<button class="active" onclick="showDashboard()" id="btnDashboard">
+<svg viewBox="0 0 24 24">
+<path d="M3 10L12 3l9 7v10a1 1 0 0 1-1 1h-6v-6H10v6H4a1 1 0 0 1-1-1z"/>
+</svg>
+Dashboard
+</button>
+
+<button onclick="changeFolder('photos')" id="btnPhotos">
+<svg viewBox="0 0 24 24">
+<path d="M21 19V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14h18zM8 13l2.5 3 3.5-5 4 6H6l2-4z"/>
+</svg>
+Photos
+</button>
+
+<button onclick="changeFolder('videos')" id="btnVideos">
+<svg viewBox="0 0 24 24">
+<path d="M17 10.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4.5l4 4v-11l-4 4z"/>
+</svg>
+Videos
+</button>
+
+<button onclick="changeFolder('other')" id="btnOther">
+<svg viewBox="0 0 24 24">
+<path d="M4 4h16v4H4zM4 10h16v10H4z"/>
+</svg>
+Other
+</button>
+
+<button onclick="changeFolder('madrasah')" id="btnMadrasah">
+<svg viewBox="0 0 24 24">
+<path d="M12 3L1 9l11 6 9-4.9V17h2V9z"/>
+</svg>
+Madrasah
+</button>
+
 </div>
 </div>
 
@@ -205,13 +243,11 @@ white-space:nowrap;
 
 <div class="content">
 
-<!-- DASHBOARD -->
 <div class="dashboard" id="dashboardSection">
 <h1>Welcome to f Software Cloud</h1>
 <p>Select a section from the left menu to view your files.</p>
 </div>
 
-<!-- DRIVE IFRAME -->
 <iframe id="driveIframe"></iframe>
 
 <div class="loading" id="loading">
@@ -237,7 +273,6 @@ document.querySelectorAll('.menu button').forEach(btn=>btn.classList.remove('act
 function showDashboard(){
 resetActive();
 document.getElementById('btnDashboard').classList.add('active');
-
 document.getElementById('dashboardSection').style.display="block";
 document.getElementById('driveIframe').style.display="none";
 }
@@ -247,7 +282,6 @@ resetActive();
 document.getElementById('btn'+key.charAt(0).toUpperCase()+key.slice(1)).classList.add('active');
 
 document.getElementById('dashboardSection').style.display="none";
-
 const iframe=document.getElementById('driveIframe');
 iframe.style.display="block";
 

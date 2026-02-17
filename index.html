@@ -75,7 +75,7 @@
         .logo-text {
             font-family: 'Gabriola', 'Segoe UI', cursive;
             font-size: 48px;
-            font-weight: bold;  /* বল্ড করা হয়েছে */
+            font-weight: bold;
             text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.4);
             letter-spacing: 2px;
             background: linear-gradient(180deg, #ffffff 0%, #f0f0f0 100%);
@@ -86,10 +86,10 @@
         }
 
         .logo-text .f-letter {
-            color: #4CAF50;  /* সবুজ রঙ */
+            color: #4CAF50;
             font-family: 'Gabriola', cursive;
             font-size: 56px;
-            font-weight: bold;  /* বল্ড */
+            font-weight: bold;
             text-shadow: 2px 2px 4px rgba(76, 175, 80, 0.5);
             display: inline-block;
             transform: scale(1.1);
@@ -98,7 +98,7 @@
 
         .logo-text .software-part {
             font-family: 'Gabriola', cursive;
-            font-weight: bold;  /* বল্ড */
+            font-weight: bold;
             background: linear-gradient(45deg, #fff 30%, #e0e0e0 70%);
             -webkit-background-clip: text;
             background-clip: text;
@@ -106,10 +106,10 @@
         }
 
         .logo-text .e-letter {
-            color: #f44336;  /* লাল রঙ */
+            color: #f44336;
             font-family: 'Gabriola', cursive;
             font-size: 56px;
-            font-weight: bold;  /* বল্ড */
+            font-weight: bold;
             text-shadow: 2px 2px 4px rgba(244, 67, 54, 0.5);
             display: inline-block;
             transform: scale(1.1);
@@ -134,32 +134,51 @@
             opacity: 0.6;
         }
 
-        /* ডান পাশে শুধু ইউজার আইকন */
+        /* ইউজার প্রোফাইল ইমেজ */
         .user-menu {
             display: flex;
             align-items: center;
             gap: 15px;
         }
 
-        .user-icon {
-            width: 45px;
-            height: 45px;
-            background: rgba(255, 255, 255, 0.2);
+        .user-profile {
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.2);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            font-size: 20px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            cursor: pointer;
-            transition: all 0.3s ease;
         }
 
-        .user-icon:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: scale(1.05);
+        .user-profile:hover {
             border-color: white;
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .user-profile img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .user-profile .default-avatar {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #4CAF50, #f44336);
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
         }
 
         /* Main Container */
@@ -335,6 +354,11 @@
                 font-size: 22px;
             }
 
+            .user-profile {
+                width: 40px;
+                height: 40px;
+            }
+
             .drive-card {
                 height: calc(100vh - 250px);
                 padding: 15px;
@@ -401,10 +425,14 @@
                 </div>
             </div>
             
-            <!-- শুধু ইউজার আইকন রেখেছি, বাটনগুলো বাদ -->
+            <!-- ইউজার প্রোফাইল ইমেজ - আপনার ছবি এখানে দেখাবে -->
             <div class="user-menu">
-                <div class="user-icon" title="User Profile">
-                    <span>👤</span>
+                <div class="user-profile" id="userProfile" title="User Profile" onclick="alert('User Profile Clicked!')">
+                    <!-- ইমেজ লোড হবে এখানে। ইমেজ না থাকলে ডিফল্ট আইকন দেখাবে -->
+                    <img src="profile.jpg" alt="Profile" onerror="this.style.display='none'; document.getElementById('defaultAvatar').style.display='flex';">
+                    <div class="default-avatar" id="defaultAvatar" style="display: none;">
+                        <span>👤</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -478,6 +506,17 @@
 
         // Initial loader
         showLoader();
+
+        // প্রোফাইল ইমেজ লোড হওয়ার পর চেক করা
+        document.addEventListener('DOMContentLoaded', function() {
+            const profileImg = document.querySelector('.user-profile img');
+            if (profileImg) {
+                profileImg.onerror = function() {
+                    this.style.display = 'none';
+                    document.getElementById('defaultAvatar').style.display = 'flex';
+                };
+            }
+        });
     </script>
 
 </body>

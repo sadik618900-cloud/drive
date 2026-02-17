@@ -3,107 +3,83 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>f Software | Dashboard</title>
+<title>f Software</title>
 
 <style>
 *{
 margin:0;
 padding:0;
 box-sizing:border-box;
+font-family:'Segoe UI',sans-serif;
 }
 
 body{
-font-family:'Segoe UI',sans-serif;
 background:#0f172a;
 color:white;
-display:flex;
 min-height:100vh;
-}
-
-/* SIDEBAR */
-.sidebar{
-width:230px;
-background:#111827;
-padding:25px 20px;
 display:flex;
 flex-direction:column;
+}
+
+/* TOP NAV */
+.navbar{
+background:#111827;
+padding:15px 25px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+flex-wrap:wrap;
 gap:15px;
-border-right:1px solid rgba(255,255,255,0.05);
+border-bottom:1px solid rgba(255,255,255,0.05);
 }
 
 .logo{
-font-size:22px;
+font-size:20px;
 font-weight:bold;
 color:#38bdf8;
-margin-bottom:15px;
+}
+
+.menu{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
 }
 
 .menu button{
 display:flex;
 align-items:center;
-gap:10px;
-width:100%;
-padding:12px;
+gap:8px;
+padding:10px 15px;
 border:none;
-border-radius:10px;
+border-radius:8px;
 background:transparent;
 color:#cbd5e1;
-text-align:left;
 cursor:pointer;
 transition:0.3s;
 font-size:14px;
 }
 
-.menu button svg{
-width:18px;
-height:18px;
-fill:currentColor;
-}
-
 .menu button:hover{
 background:#1e293b;
-color:#fff;
+color:white;
 }
 
 .menu button.active{
 background:#2563eb;
-color:#fff;
+color:white;
 }
 
-/* MAIN */
+/* MAIN CONTENT */
 .main{
 flex:1;
-padding:25px;
-display:flex;
-flex-direction:column;
-}
-
-.topbar{
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:20px;
-}
-
-.profile{
-width:40px;
-height:40px;
-border-radius:50%;
-overflow:hidden;
-}
-
-.profile img{
-width:100%;
-height:100%;
-object-fit:cover;
+padding:30px;
 }
 
 .content{
-flex:1;
 background:#1e293b;
 border-radius:20px;
 padding:30px;
-box-shadow:0 20px 40px rgba(0,0,0,0.4);
+height:75vh;
 position:relative;
 overflow:hidden;
 }
@@ -111,13 +87,13 @@ overflow:hidden;
 /* DASHBOARD */
 .dashboard{
 text-align:center;
-margin-top:60px;
+margin-top:80px;
 }
 
 .dashboard h1{
 font-size:32px;
-margin-bottom:15px;
 color:#38bdf8;
+margin-bottom:15px;
 }
 
 .dashboard p{
@@ -131,8 +107,8 @@ width:100%;
 height:100%;
 border:none;
 border-radius:15px;
-background:#fff;
 display:none;
+background:white;
 }
 
 /* LOADER */
@@ -143,10 +119,10 @@ background:rgba(15,23,42,0.8);
 display:flex;
 justify-content:center;
 align-items:center;
-border-radius:20px;
 opacity:0;
 pointer-events:none;
 transition:0.3s;
+border-radius:20px;
 }
 
 .loading.active{
@@ -170,18 +146,12 @@ animation:spin 1s linear infinite;
 
 /* MOBILE */
 @media(max-width:768px){
-body{flex-direction:column;}
-.sidebar{
-width:100%;
-flex-direction:row;
-overflow-x:auto;
+.content{
+height:65vh;
+padding:20px;
 }
-.menu{
-display:flex;
-gap:10px;
-}
-.menu button{
-white-space:nowrap;
+.dashboard{
+margin-top:40px;
 }
 }
 </style>
@@ -189,63 +159,56 @@ white-space:nowrap;
 
 <body>
 
-<div class="sidebar">
+<!-- TOP NAVIGATION -->
+<div class="navbar">
 <div class="logo">f Software</div>
 
 <div class="menu">
-
 <button class="active" onclick="showDashboard()" id="btnDashboard">
-<svg viewBox="0 0 24 24">
-<path d="M3 10L12 3l9 7v10a1 1 0 0 1-1 1h-6v-6H10v6H4a1 1 0 0 1-1-1z"/>
+<!-- Home SVG -->
+<svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
+<path d="M3 12L12 3l9 9v9a1 1 0 0 1-1 1h-6v-6H10v6H4a1 1 0 0 1-1-1z"/>
 </svg>
 Dashboard
 </button>
 
 <button onclick="changeFolder('photos')" id="btnPhotos">
-<svg viewBox="0 0 24 24">
-<path d="M21 19V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14h18zM8 13l2.5 3 3.5-5 4 6H6l2-4z"/>
+<svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
+<path d="M4 4h16v16H4z"/>
 </svg>
 Photos
 </button>
 
 <button onclick="changeFolder('videos')" id="btnVideos">
-<svg viewBox="0 0 24 24">
-<path d="M17 10.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4.5l4 4v-11l-4 4z"/>
+<svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
+<path d="M10 8l6 4-6 4z"/>
 </svg>
 Videos
 </button>
 
 <button onclick="changeFolder('other')" id="btnOther">
-<svg viewBox="0 0 24 24">
-<path d="M4 4h16v4H4zM4 10h16v10H4z"/>
+<svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
+<path d="M3 6h18v12H3z"/>
 </svg>
 Other
 </button>
 
 <button onclick="changeFolder('madrasah')" id="btnMadrasah">
-<svg viewBox="0 0 24 24">
-<path d="M12 3L1 9l11 6 9-4.9V17h2V9z"/>
+<svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
+<path d="M12 3l9 4-9 4-9-4zM3 10l9 4 9-4v6l-9 4-9-4z"/>
 </svg>
 Madrasah
 </button>
-
 </div>
 </div>
 
+<!-- MAIN -->
 <div class="main">
-
-<div class="topbar">
-<div>Welcome</div>
-<div class="profile">
-<img src="profile.png">
-</div>
-</div>
-
 <div class="content">
 
 <div class="dashboard" id="dashboardSection">
 <h1>Welcome to f Software Cloud</h1>
-<p>Select a section from the left menu to view your files.</p>
+<p>Select a section from the top menu to view your files.</p>
 </div>
 
 <iframe id="driveIframe"></iframe>
@@ -255,7 +218,6 @@ Madrasah
 </div>
 
 </div>
-
 </div>
 
 <script>
@@ -282,10 +244,11 @@ resetActive();
 document.getElementById('btn'+key.charAt(0).toUpperCase()+key.slice(1)).classList.add('active');
 
 document.getElementById('dashboardSection').style.display="none";
+
 const iframe=document.getElementById('driveIframe');
 iframe.style.display="block";
-
 showLoader();
+
 iframe.src=`https://drive.google.com/embeddedfolderview?id=${folders[key]}#grid`;
 }
 

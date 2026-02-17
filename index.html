@@ -1,393 +1,250 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>f Software · Cloud Drive</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>f Software | Cloud Drive</title>
 
-    body {
-      background: #f4f7fb;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      color: #1a2639;
-    }
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
 
-    /* ===== NAVBAR (fresh & airy) ===== */
-    .navbar {
-      background: rgba(255,255,255,0.85);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      border-bottom: 1px solid rgba(0,20,50,0.08);
-      padding: 0.9rem 2rem;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      box-shadow: 0 4px 20px -8px rgba(0,32,64,0.1);
-    }
+body{
+font-family: 'Segoe UI', sans-serif;
+background:#0f172a;
+color:white;
+display:flex;
+min-height:100vh;
+}
 
-    .nav-container {
-      max-width: 1400px;
-      margin: 0 auto;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 1.2rem;
-    }
+/* SIDEBAR */
+.sidebar{
+width:240px;
+background:#111827;
+padding:25px 20px;
+display:flex;
+flex-direction:column;
+gap:20px;
+border-right:1px solid rgba(255,255,255,0.05);
+}
 
-    /* logo — minimalist & bold */
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
+.logo{
+font-size:22px;
+font-weight:bold;
+letter-spacing:1px;
+margin-bottom:20px;
+color:#38bdf8;
+}
 
-    .logo-icon {
-      width: 44px;
-      height: 44px;
-      background: linear-gradient(145deg, #2A7B9C, #1E5F7A);
-      border-radius: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-size: 26px;
-      font-weight: 600;
-      letter-spacing: -0.5px;
-      box-shadow: 0 8px 16px -6px rgba(26,67,113,0.25);
-      transition: 0.2s;
-    }
+.menu button{
+width:100%;
+padding:12px;
+border:none;
+border-radius:10px;
+background:transparent;
+color:#cbd5e1;
+text-align:left;
+cursor:pointer;
+transition:0.3s;
+font-size:14px;
+}
 
-    .logo-text {
-      font-size: 1.8rem;
-      font-weight: 550;
-      background: linear-gradient(130deg, #1B3B4F, #2A5F7A);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      letter-spacing: -0.5px;
-    }
+.menu button:hover{
+background:#1e293b;
+color:#fff;
+}
 
-    /* navigation tabs — pill style */
-    .nav-links {
-      display: flex;
-      gap: 0.6rem;
-      flex-wrap: wrap;
-      background: rgba(230, 240, 250, 0.5);
-      padding: 0.4rem;
-      border-radius: 48px;
-      backdrop-filter: blur(4px);
-    }
+.menu button.active{
+background:#2563eb;
+color:#fff;
+}
 
-    .nav-link {
-      padding: 0.65rem 1.4rem;
-      border-radius: 40px;
-      border: none;
-      background: transparent;
-      color: #2c3f5c;
-      font-weight: 520;
-      font-size: 0.95rem;
-      letter-spacing: 0.2px;
-      cursor: pointer;
-      transition: 0.2s ease;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-    }
+/* MAIN AREA */
+.main{
+flex:1;
+display:flex;
+flex-direction:column;
+padding:20px;
+}
 
-    .nav-link:hover {
-      background: rgba(255,255,255,0.8);
-      color: #0A2A44;
-      transform: translateY(-2px);
-      box-shadow: 0 8px 14px -10px #1e3f5f;
-    }
+/* TOP BAR */
+.topbar{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:20px;
+}
 
-    .nav-link.active {
-      background: white;
-      color: #0e3b4f;
-      font-weight: 600;
-      box-shadow: 0 10px 18px -10px #1a4b66, 0 0 0 1px rgba(60,130,180,0.2);
-    }
+.breadcrumb{
+font-size:14px;
+color:#94a3b8;
+}
 
-    /* profile icon minimal */
-    .user-profile {
-      width: 46px;
-      height: 46px;
-      border-radius: 50%;
-      background: #d9e3ed;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 2px solid white;
-      box-shadow: 0 4px 12px rgba(0,20,30,0.1);
-      overflow: hidden;
-    }
+.profile{
+width:40px;
+height:40px;
+border-radius:50%;
+overflow:hidden;
+}
 
-    .user-profile img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
+.profile img{
+width:100%;
+height:100%;
+object-fit:cover;
+}
 
-    /* ===== MAIN CONTAINER ===== */
-    .container {
-      flex: 1;
-      max-width: 1400px;
-      width: 100%;
-      margin: 1.5rem auto 1rem;
-      padding: 0 2rem;
-    }
+/* DRIVE CARD */
+.drive-card{
+flex:1;
+background:#1e293b;
+border-radius:20px;
+padding:20px;
+box-shadow:0 20px 40px rgba(0,0,0,0.4);
+position:relative;
+}
 
-    /* breadcrumb — clean and subtle */
-    .breadcrumb {
-      background: rgba(255,255,255,0.7);
-      backdrop-filter: blur(8px);
-      padding: 0.8rem 1.5rem;
-      border-radius: 60px;
-      margin-bottom: 1.8rem;
-      font-size: 0.9rem;
-      color: #3a4f64;
-      box-shadow: 0 4px 10px -4px rgba(0,0,0,0.02);
-      border: 1px solid rgba(255,255,255,0.9);
-      display: inline-block;
-    }
+iframe{
+width:100%;
+height:100%;
+border:none;
+border-radius:15px;
+background:#fff;
+}
 
-    .breadcrumb span {
-      font-weight: 600;
-      color: #1c4b6e;
-    }
+/* LOADER */
+.loading{
+position:absolute;
+inset:0;
+background:rgba(15,23,42,0.8);
+display:flex;
+justify-content:center;
+align-items:center;
+border-radius:20px;
+opacity:0;
+pointer-events:none;
+transition:0.3s;
+}
 
-    /* drive card — floating glassmorphism (but lighter) */
-    .drive-card {
-      background: rgba(255,255,255,0.8);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border-radius: 36px;
-      padding: 1.2rem;
-      border: 1px solid rgba(255,255,255,0.9);
-      box-shadow: 0 30px 50px -25px rgba(21, 50, 80, 0.3), 0 10px 20px -10px rgba(0,32,64,0.1);
-      height: 65vh;
-      min-height: 480px;
-      position: relative;
-      transition: box-shadow 0.3s;
-    }
+.loading.active{
+opacity:1;
+pointer-events:all;
+}
 
-    .drive-card:hover {
-      box-shadow: 0 35px 55px -25px #1b4d6e;
-    }
+.loader{
+width:50px;
+height:50px;
+border:4px solid rgba(255,255,255,0.2);
+border-top:4px solid #38bdf8;
+border-radius:50%;
+animation:spin 1s linear infinite;
+}
 
-    iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-      border-radius: 26px;
-      background: #ffffff;
-      box-shadow: inset 0 0 0 1px rgba(0,0,0,0.02);
-    }
+@keyframes spin{
+0%{transform:rotate(0deg);}
+100%{transform:rotate(360deg);}
+}
 
-    /* stats panel — minimal tagline */
-    .stats {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-top: 1.5rem;
-      padding: 0.9rem 1.8rem;
-      background: rgba(255,255,255,0.6);
-      backdrop-filter: blur(8px);
-      border-radius: 60px;
-      color: #1a3446;
-      font-size: 0.95rem;
-      font-weight: 470;
-      border: 1px solid rgba(255,255,255,0.9);
-      box-shadow: 0 8px 18px -12px #0e2d42;
-    }
+/* MOBILE */
+@media(max-width:768px){
 
-    #fileCount {
-      background: #dbeaf3;
-      padding: 0.2rem 1.2rem;
-      border-radius: 40px;
-      font-weight: 520;
-      color: #154257;
-    }
+body{
+flex-direction:column;
+}
 
-    /* ===== LOADER (fresh & playful) ===== */
-    .loading-overlay {
-      position: absolute;
-      inset: 0;
-      background: rgba(255,255,255,0.4);
-      backdrop-filter: blur(3px);
-      border-radius: 36px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      opacity: 0;
-      pointer-events: none;
-      transition: 0.25s ease;
-      z-index: 20;
-    }
+.sidebar{
+width:100%;
+flex-direction:row;
+overflow-x:auto;
+gap:10px;
+}
 
-    .loading-overlay.active {
-      opacity: 1;
-      pointer-events: all;
-    }
+.menu{
+display:flex;
+gap:10px;
+}
 
-    .loader {
-      width: 64px;
-      height: 64px;
-      border: 5px solid rgba(90, 160, 210, 0.15);
-      border-top: 5px solid #22749e;
-      border-right: 5px solid #46b3b3;
-      border-bottom: 5px solid #84c0d6;
-      border-radius: 50%;
-      animation: spin 0.9s cubic-bezier(0.4, 0.0, 0.2, 1) infinite;
-      box-shadow: 0 10px 25px -10px #165a7a;
-    }
+.menu button{
+white-space:nowrap;
+}
 
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
+.main{
+padding:15px;
+}
 
-    /* footer — ultra light */
-    .footer {
-      text-align: center;
-      padding: 1.2rem;
-      margin-top: 1.5rem;
-      color: #5c6f87;
-      font-size: 0.85rem;
-      background: rgba(255,255,255,0.5);
-      backdrop-filter: blur(4px);
-      border-top: 1px solid rgba(0,0,0,0.02);
-      letter-spacing: 0.2px;
-    }
-
-    /* responsive touches */
-    @media (max-width: 680px) {
-      .navbar { padding: 0.8rem 1rem; }
-      .container { padding: 0 1rem; }
-      .logo-text { font-size: 1.5rem; }
-      .nav-links { background: transparent; padding: 0; }
-      .nav-link { padding: 0.5rem 1rem; font-size: 0.85rem;}
-      .drive-card { height: 58vh; min-height: 400px; }
-    }
-
-    /* custom placeholder for profile if image missing */
-    .user-profile img[src="profile.png"] {
-      background: linear-gradient(145deg, #a0c6e9, #7ba9d1);
-      object-fit: cover;
-      display: block;
-    }
-  </style>
+}
+</style>
 </head>
+
 <body>
 
-<nav class="navbar">
-  <div class="nav-container">
-    <div class="logo">
-      <div class="logo-icon">f</div>
-      <div class="logo-text">f Software</div>
-    </div>
+<div class="sidebar">
+<div class="logo">f Software</div>
 
-    <div class="nav-links">
-      <button class="nav-link active" onclick="changeFolder('photos')" id="btnPhotos">📸 Photos</button>
-      <button class="nav-link" onclick="changeFolder('videos')" id="btnVideos">🎥 Videos</button>
-      <button class="nav-link" onclick="changeFolder('other')" id="btnOther">📁 Other Files</button>
-      <button class="nav-link" onclick="changeFolder('madrasah')" id="btnMadrasah">📚 Madrasah</button>
-    </div>
-
-    <div class="user-profile">
-      <img src="profile.png" alt="user">
-    </div>
-  </div>
-</nav>
-
-<div class="container">
-  <div class="breadcrumb">
-    <span>🏠</span> Home → Drive → <span id="currentFolder">Photos</span>
-  </div>
-
-  <div class="drive-card">
-    <iframe id="driveIframe"
-      src="https://drive.google.com/embeddedfolderview?id=1Td0P4syxyk7khNQlTiWFraBr-WcY4hjk#grid"
-      onload="hideLoader()">
-    </iframe>
-    <div class="loading-overlay" id="loadingOverlay">
-      <div class="loader"></div>
-    </div>
-  </div>
-
-  <div class="stats">
-    <span>⚡ lightning fast · encrypted</span>
-    <span id="fileCount">Viewing Photos</span>
-  </div>
+<div class="menu">
+<button class="active" onclick="changeFolder('photos')" id="btnPhotos">📸 Photos</button>
+<button onclick="changeFolder('videos')" id="btnVideos">🎥 Videos</button>
+<button onclick="changeFolder('other')" id="btnOther">📁 Other</button>
+<button onclick="changeFolder('madrasah')" id="btnMadrasah">📚 Madrasah</button>
+</div>
 </div>
 
-<footer class="footer">
-  © 2026 f Software · cloud drive reimagined
-</footer>
+<div class="main">
+
+<div class="topbar">
+<div class="breadcrumb">Home / Drive / <span id="currentFolder">Photos</span></div>
+<div class="profile">
+<img src="profile.png">
+</div>
+</div>
+
+<div class="drive-card">
+
+<iframe id="driveIframe"
+src="https://drive.google.com/embeddedfolderview?id=1Td0P4syxyk7khNQlTiWFraBr-WcY4hjk#grid"
+onload="hideLoader()">
+</iframe>
+
+<div class="loading" id="loading">
+<div class="loader"></div>
+</div>
+
+</div>
+
+</div>
 
 <script>
-  // folder map — keep original IDs (unchanged)
-  const folders = {
-    photos: '1Td0P4syxyk7khNQlTiWFraBr-WcY4hjk',
-    videos: '1Bkb60c7PLUTurVl0FoU2zq3GqxP2lHpI',
-    other: '1oCWcDaL2TbCPYbiqxvhYrjTjopssgX8U',
-    madrasah: '1T_xsdXiREw7Lo15fXEpnIQUuIGUbjFwM'
-  };
+const folders={
+photos:'1Td0P4syxyk7khNQlTiWFraBr-WcY4hjk',
+videos:'1Bkb60c7PLUTurVl0FoU2zq3GqxP2lHpI',
+other:'1oCWcDaL2TbCPYbiqxvhYrjTjopssgX8U',
+madrasah:'1T_xsdXiREw7Lo15fXEpnIQUuIGUbjFwM'
+};
 
-  const folderNames = {
-    photos: 'Photos',
-    videos: 'Videos',
-    other: 'Other Files',
-    madrasah: 'Madrasah'
-  };
+function changeFolder(key){
+document.querySelectorAll('.menu button').forEach(btn=>btn.classList.remove('active'));
+document.getElementById('btn'+key.charAt(0).toUpperCase()+key.slice(1)).classList.add('active');
 
-  function changeFolder(folderKey) {
-    const iframe = document.getElementById('driveIframe');
-    const folderId = folders[folderKey];
+document.getElementById('currentFolder').textContent=
+key.charAt(0).toUpperCase()+key.slice(1);
 
-    // update active button
-    document.querySelectorAll('.nav-link').forEach(btn => btn.classList.remove('active'));
-    const btnId = `btn${folderKey.charAt(0).toUpperCase() + folderKey.slice(1)}`;
-    const activeBtn = document.getElementById(btnId);
-    if (activeBtn) activeBtn.classList.add('active');
+showLoader();
+document.getElementById('driveIframe').src=
+`https://drive.google.com/embeddedfolderview?id=${folders[key]}#grid`;
+}
 
-    // update breadcrumb & stats text
-    document.getElementById('currentFolder').textContent = folderNames[folderKey];
-    document.getElementById('fileCount').textContent = `Viewing ${folderNames[folderKey]}`;
+function showLoader(){
+document.getElementById('loading').classList.add('active');
+}
 
-    // show loader and change iframe src
-    showLoader();
-    iframe.src = `https://drive.google.com/embeddedfolderview?id=${folderId}#grid`;
-  }
+function hideLoader(){
+document.getElementById('loading').classList.remove('active');
+}
 
-  function showLoader() {
-    document.getElementById('loadingOverlay').classList.add('active');
-  }
-
-  function hideLoader() {
-    document.getElementById('loadingOverlay').classList.remove('active');
-  }
-
-  // initial loader show (page load)
-  window.addEventListener('load', function() {
-    // If iframe already cached, onload might be quick; but we ensure loader visibility
-    // Force show until iframe fires onload (it will call hideLoader)
-    showLoader();
-  });
-
-  // also if iframe somehow loads before eventListener, double‑check
-  document.getElementById('driveIframe').addEventListener('load', hideLoader);
+showLoader();
 </script>
 
-<!-- tiny fallback: if profile.png missing, show letter (but image kept as original) -->
 </body>
 </html>

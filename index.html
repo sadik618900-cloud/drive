@@ -2,40 +2,62 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Sadik Cloud</title>
+<title>Sadik Cloud Pro</title>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
 body { font-family: Arial; background:#f4f6f9; padding:20px; }
 h2 { text-align:center; }
 .topbar { text-align:center; margin-bottom:20px; }
-button { padding:8px 14px; margin:5px; cursor:pointer; }
-input[type="text"] { padding:8px; width:250px; }
-.grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:15px; }
+button { padding:8px 14px; margin:5px; cursor:pointer; border:none; border-radius:6px; background:#007bff; color:white; }
+button:hover { background:#0056b3; }
+input[type="text"] { padding:8px; width:250px; border-radius:6px; border:1px solid #ccc; }
+.grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:15px; }
 .card {
   background:white;
   padding:15px;
-  border-radius:10px;
-  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+  border-radius:12px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.08);
 }
-.card h4 { margin:0 0 10px 0; word-break:break-word; }
-.card a { text-decoration:none; color:#007bff; }
+.card h4 { margin:0 0 8px 0; word-break:break-word; }
+.card small { color:gray; }
 .admin { margin-top:10px; }
+#dropZone {
+  border:2px dashed #007bff;
+  padding:30px;
+  border-radius:12px;
+  background:#eef5ff;
+  margin-top:20px;
+}
+#dropZone.hover { background:#d9eaff; }
+progress { width:100%; height:15px; margin-top:10px; }
+.dark { background:#1e1e1e; color:white; }
+.dark .card { background:#2c2c2c; }
+.dark input { background:#333; color:white; border:1px solid #555; }
 </style>
 </head>
 <body>
 
-<h2>☁ Sadik Cloud Storage</h2>
+<h2>☁ Sadik Cloud Pro</h2>
 
 <div class="topbar">
   <div id="loginDiv"></div>
   <button id="logoutBtn" style="display:none;">Logout</button>
+  <button onclick="toggleDark()">Dark Mode</button>
   <br><br>
   <input type="text" id="searchBox" placeholder="Search file..." onkeyup="filterFiles()">
-  <br><br>
-  <input type="file" id="fileInput" style="display:none;">
-  <button id="uploadBtn" style="display:none;">Upload</button>
 </div>
 
+<div id="uploadArea" style="display:none;">
+  <div id="dropZone">
+    <p><b>Drag & Drop files here</b></p>
+    <p>or</p>
+    <input type="file" id="fileInput" multiple hidden>
+    <button onclick="fileInput.click()">Select Files</button>
+    <progress id="progressBar" value="0" max="100" style="display:none;"></progress>
+  </div>
+</div>
+
+<br>
 <div class="grid" id="fileList"></div>
 
 <script>
@@ -54,8 +76,7 @@ function handleCredentialResponse(response) {
   accessToken = response.credential;
 
   if (userEmail === ADMIN_EMAIL) {
-    document.getElementById("uploadBtn").style.display = "inline-block";
-    document.getElementById("fileInput").style.display = "inline-block";
+    document.getElementById("uploadArea").style.display = "block";
   }
 
   document.getElementById("logoutBtn").style.display = "inline-block";
@@ -66,7 +87,7 @@ function handleCredentialResponse(response) {
 
 async function listFiles() {
   const res = await fetch(
-    `https://www.googleapis.com/drive/v3/files?q='${PUBLIC_FOLDER_ID}'+in+parents&fields=files(id,name,mimeType)`,
+    `https://www.googleapis.com/drive/v3/files?q='${PUBLIC_FOLDER_ID}'+in+parents&fields=files(id,name,size)`,
     { headers: { Authorization: `Bearer ${accessToken}` } }
   );
 
@@ -85,18 +106,19 @@ function renderFiles(files) {
   }
 
   files.forEach(file => {
+    const size = file.size ? (file.size / 1024 / 1024).toFixed(2) + " MB" : "";
     const div = document.createElement("div");
     div.className = "card";
 
     div.innerHTML = `
       <h4>${file.name}</h4>
+      <small>${size}</small><br><br>
       <a href="https://drive.google.com/file/d/${file.id}/view" target="_blank">Download</a>
       ${userEmail === ADMIN_EMAIL ? `
-      <div class="admin">
-        <button onclick="deleteFile('${file.id}')">Delete</button>
-      </div>` : ``}
+        <div class="admin">
+          <button onclick="deleteFile('${file.id}')">Delete</button>
+        </div>` : ``}
     `;
-
     container.appendChild(div);
   });
 }
@@ -109,9 +131,47 @@ function filterFiles() {
   renderFiles(filtered);
 }
 
-document.getElementById("uploadBtn").onclick = async () => {
-  const file = document.getElementById("fileInput").files[0];
-  if (!file) return alert("Select a file first");
+async function deleteFile(id) {
+  if (!confirm("Delete file?")) return;
+
+  await fetch(`https://www.googleapis.com/drive/v3/files/${id}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${accessToken}` }
+  });
+
+  listFiles();
+}
+
+const dropZone = document.getElementById("dropZone");
+const fileInput = document.getElementById("fileInput");
+const progressBar = document.getElementById("progressBar");
+
+dropZone.addEventListener("dragover", e => {
+  e.preventDefault();
+  dropZone.classList.add("hover");
+});
+dropZone.addEventListener("dragleave", () => {
+  dropZone.classList.remove("hover");
+});
+dropZone.addEventListener("drop", e => {
+  e.preventDefault();
+  dropZone.classList.remove("hover");
+  uploadFiles(e.dataTransfer.files);
+});
+fileInput.addEventListener("change", () => {
+  uploadFiles(fileInput.files);
+});
+
+async function uploadFiles(files) {
+  for (let file of files) {
+    await uploadSingleFile(file);
+  }
+  listFiles();
+}
+
+async function uploadSingleFile(file) {
+  progressBar.style.display = "block";
+  progressBar.value = 0;
 
   const metadata = {
     name: file.name,
@@ -119,29 +179,29 @@ document.getElementById("uploadBtn").onclick = async () => {
   };
 
   const form = new FormData();
-  form.append("metadata", new Blob([JSON.stringify(metadata)], { type: "application/json" }));
+  form.append("metadata", new Blob([JSON.stringify(metadata)], {type: "application/json"}));
   form.append("file", file);
 
-  await fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart", {
-    method: "POST",
-    headers: { Authorization: `Bearer ${accessToken}` },
-    body: form
-  });
+  const xhr = new XMLHttpRequest();
+  xhr.open("POST", "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart");
+  xhr.setRequestHeader("Authorization", "Bearer " + accessToken);
 
-  alert("Uploaded Successfully!");
-  listFiles();
-};
+  xhr.upload.onprogress = function(e) {
+    if (e.lengthComputable) {
+      progressBar.value = (e.loaded / e.total) * 100;
+    }
+  };
 
-async function deleteFile(fileId) {
-  if (!confirm("Delete this file?")) return;
+  xhr.onload = function() {
+    progressBar.value = 100;
+    setTimeout(()=> progressBar.style.display="none", 1000);
+  };
 
-  await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}`, {
-    method: "DELETE",
-    headers: { Authorization: `Bearer ${accessToken}` }
-  });
+  xhr.send(form);
+}
 
-  alert("Deleted!");
-  listFiles();
+function toggleDark() {
+  document.body.classList.toggle("dark");
 }
 
 document.getElementById("logoutBtn").onclick = () => location.reload();
@@ -159,6 +219,5 @@ window.onload = () => {
 };
 
 </script>
-
 </body>
 </html>

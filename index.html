@@ -13,7 +13,7 @@
 }
 
 body{
-    background:linear-gradient(135deg,#0f2027 0%,#203a43 50%,#2c5364 100%);
+    background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
     font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,sans-serif;
     min-height:100vh;
     display:flex;
@@ -24,52 +24,43 @@ body{
 .navbar{
     background:rgba(255,255,255,0.08);
     backdrop-filter:blur(20px);
-    -webkit-backdrop-filter:blur(20px);
-    padding:1rem 2rem;
+    padding:1rem;
     box-shadow:0 8px 40px rgba(0,0,0,0.4);
-    border-bottom:1px solid rgba(255,255,255,0.15);
 }
 
 .nav-container{
     max-width:1400px;
-    margin:0 auto;
+    margin:auto;
     display:flex;
-    justify-content:space-between;
     align-items:center;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:10px;
 }
 
 /* LOGO */
 .logo{
     display:flex;
     align-items:center;
-    gap:15px;
+    gap:10px;
 }
 
 .logo-icon{
-    width:50px;
-    height:50px;
+    width:45px;
+    height:45px;
     background:linear-gradient(135deg,#00f5a0,#00d9f5);
-    border-radius:15px;
+    border-radius:12px;
     display:flex;
     align-items:center;
     justify-content:center;
     color:white;
+    font-size:24px;
     font-weight:bold;
-    font-size:28px;
-    transform:rotate(10deg);
-    box-shadow:0 0 20px rgba(0,245,160,0.6);
-    transition:all .3s ease;
-}
-
-.logo-icon:hover{
-    transform:rotate(0deg) scale(1.1);
 }
 
 .logo-text{
-    font-family:'Gabriola','Segoe UI',cursive;
-    font-size:42px;
+    font-size:28px;
     font-weight:bold;
-    letter-spacing:2px;
     background:linear-gradient(45deg,#ffffff,#cfd8dc);
     -webkit-background-clip:text;
     color:transparent;
@@ -78,50 +69,36 @@ body{
 /* NAV BUTTONS */
 .nav-links{
     display:flex;
-    gap:15px;
-    margin-left:auto;
-    margin-right:20px;
+    gap:10px;
+    flex-wrap:wrap;
 }
 
 .nav-link{
-    padding:10px 22px;
-    border-radius:30px;
+    padding:8px 16px;
+    border-radius:25px;
     background:rgba(255,255,255,0.08);
     border:1px solid rgba(255,255,255,0.15);
     color:#fff;
-    font-size:15px;
+    font-size:14px;
     cursor:pointer;
-    transition:all .3s ease;
-    backdrop-filter:blur(10px);
+    transition:.3s;
+}
+
+.nav-link.active{
+    background:linear-gradient(135deg,#ff6a00,#ff00c8);
 }
 
 .nav-link:hover{
     background:linear-gradient(135deg,#00f5a0,#00d9f5);
     color:#000;
-    transform:translateY(-3px);
-    box-shadow:0 10px 25px rgba(0,245,160,0.4);
 }
 
-.nav-link.active{
-    background:linear-gradient(135deg,#ff6a00,#ff00c8);
-    border:none;
-    box-shadow:0 8px 20px rgba(255,0,200,0.4);
-}
-
-/* USER PROFILE */
+/* PROFILE */
 .user-profile{
-    width:50px;
-    height:50px;
+    width:40px;
+    height:40px;
     border-radius:50%;
     overflow:hidden;
-    border:2px solid rgba(255,255,255,0.5);
-    cursor:pointer;
-    transition:.3s;
-}
-
-.user-profile:hover{
-    transform:scale(1.1);
-    box-shadow:0 0 20px rgba(0,255,255,.6);
 }
 
 .user-profile img{
@@ -133,32 +110,32 @@ body{
 /* MAIN */
 .container{
     flex:1;
-    padding:20px;
+    padding:15px;
     max-width:1400px;
-    margin:0 auto;
+    margin:auto;
     width:100%;
 }
 
 /* BREADCRUMB */
 .breadcrumb{
     background:rgba(255,255,255,0.07);
-    backdrop-filter:blur(15px);
-    padding:12px 20px;
-    border-radius:15px;
-    margin-bottom:20px;
+    padding:10px 15px;
+    border-radius:12px;
+    margin-bottom:15px;
+    font-size:14px;
     color:#e0f7fa;
-    border:1px solid rgba(255,255,255,0.1);
 }
 
 /* DRIVE CARD */
 .drive-card{
     background:rgba(255,255,255,0.07);
-    backdrop-filter:blur(25px);
-    border-radius:25px;
-    padding:25px;
+    backdrop-filter:blur(20px);
+    border-radius:20px;
+    padding:15px;
     border:1px solid rgba(255,255,255,0.12);
-    box-shadow:0 30px 60px rgba(0,0,0,0.5);
-    height:calc(100vh - 250px);
+    box-shadow:0 20px 40px rgba(0,0,0,0.5);
+    height:60vh;
+    min-height:400px;
     position:relative;
 }
 
@@ -168,20 +145,19 @@ iframe{
     border:none;
     border-radius:15px;
     background:#fff;
-    box-shadow:0 15px 35px rgba(0,0,0,.4);
 }
 
 /* STATS */
 .stats{
     display:flex;
-    gap:30px;
-    margin-top:20px;
-    padding:15px 20px;
+    gap:15px;
+    flex-wrap:wrap;
+    margin-top:15px;
+    padding:12px;
     background:rgba(255,255,255,0.07);
-    backdrop-filter:blur(10px);
-    border-radius:15px;
-    border:1px solid rgba(255,255,255,0.1);
+    border-radius:12px;
     color:#e0f7fa;
+    font-size:14px;
     justify-content:center;
 }
 
@@ -193,7 +169,7 @@ iframe{
     display:flex;
     justify-content:center;
     align-items:center;
-    border-radius:25px;
+    border-radius:20px;
     opacity:0;
     pointer-events:none;
     transition:.3s;
@@ -205,11 +181,11 @@ iframe{
 }
 
 .loader{
-    width:65px;
-    height:65px;
-    border:5px solid rgba(255,255,255,0.2);
-    border-top:5px solid #00f5a0;
-    border-right:5px solid #ff00c8;
+    width:55px;
+    height:55px;
+    border:4px solid rgba(255,255,255,0.2);
+    border-top:4px solid #00f5a0;
+    border-right:4px solid #ff00c8;
     border-radius:50%;
     animation:spin 1s linear infinite;
 }
@@ -222,10 +198,32 @@ iframe{
 /* FOOTER */
 .footer{
     text-align:center;
-    padding:15px;
+    padding:12px;
     color:rgba(255,255,255,.7);
     font-size:12px;
     background:rgba(0,0,0,.3);
+}
+
+/* EXTRA MOBILE OPTIMIZATION */
+@media (max-width:600px){
+
+.logo-text{
+    font-size:22px;
+}
+
+.nav-link{
+    font-size:12px;
+    padding:6px 12px;
+}
+
+.drive-card{
+    height:55vh;
+}
+
+.stats{
+    font-size:12px;
+}
+
 }
 </style>
 </head>
@@ -236,7 +234,7 @@ iframe{
 <div class="nav-container">
 
 <div class="logo">
-<div class="logo-icon"><span>f</span></div>
+<div class="logo-icon">f</div>
 <div class="logo-text">f Software</div>
 </div>
 
@@ -280,7 +278,7 @@ onload="hideLoader()">
 </div>
 
 <footer class="footer">
-© 2026 f Software. All rights reserved.
+© 2026 f Software
 </footer>
 
 <script>

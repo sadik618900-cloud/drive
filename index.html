@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>f Cloud | Google Drive Viewer</title>
+    <title>f Software | Cloud Drive</title>
     <style>
         * {
             margin: 0;
@@ -40,54 +40,126 @@
         .logo {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 15px;
         }
 
         .logo-icon {
-            width: 32px;
-            height: 32px;
-            background: linear-gradient(45deg, #FF6B6B, #4ECDC4);
-            border-radius: 8px;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #4CAF50, #f44336);
+            border-radius: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-weight: bold;
-            font-size: 18px;
-            transform: rotate(45deg);
+            font-size: 28px;
+            transform: rotate(10deg);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .logo-icon:hover {
+            transform: rotate(0deg) scale(1.05);
         }
 
         .logo-icon span {
-            transform: rotate(-45deg);
+            transform: rotate(-10deg);
+            transition: transform 0.3s ease;
+        }
+
+        .logo-icon:hover span {
+            transform: rotate(0deg);
         }
 
         .logo-text {
-            color: white;
-            font-size: 24px;
-            font-weight: 600;
-            letter-spacing: 1px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            font-family: 'Gabriola', 'Segoe UI', cursive;
+            font-size: 48px;
+            font-weight: bold;  /* বল্ড করা হয়েছে */
+            text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.4);
+            letter-spacing: 2px;
+            background: linear-gradient(180deg, #ffffff 0%, #f0f0f0 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            position: relative;
         }
 
-        .nav-links {
+        .logo-text .f-letter {
+            color: #4CAF50;  /* সবুজ রঙ */
+            font-family: 'Gabriola', cursive;
+            font-size: 56px;
+            font-weight: bold;  /* বল্ড */
+            text-shadow: 2px 2px 4px rgba(76, 175, 80, 0.5);
+            display: inline-block;
+            transform: scale(1.1);
+            margin-right: -3px;
+        }
+
+        .logo-text .software-part {
+            font-family: 'Gabriola', cursive;
+            font-weight: bold;  /* বল্ড */
+            background: linear-gradient(45deg, #fff 30%, #e0e0e0 70%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .logo-text .e-letter {
+            color: #f44336;  /* লাল রঙ */
+            font-family: 'Gabriola', cursive;
+            font-size: 56px;
+            font-weight: bold;  /* বল্ড */
+            text-shadow: 2px 2px 4px rgba(244, 67, 54, 0.5);
+            display: inline-block;
+            transform: scale(1.1);
+            margin-left: -3px;
+        }
+
+        /* সফটওয়্যার শব্দের জন্য স্টাইল */
+        .software-text {
+            position: relative;
+            display: inline-block;
+        }
+
+        .software-text::after {
+            content: '';
+            position: absolute;
+            bottom: 8px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, #4CAF50, #f44336);
+            border-radius: 3px;
+            opacity: 0.6;
+        }
+
+        /* ডান পাশে শুধু ইউজার আইকন */
+        .user-menu {
             display: flex;
-            gap: 20px;
+            align-items: center;
+            gap: 15px;
         }
 
-        .nav-link {
-            color: white;
-            text-decoration: none;
-            padding: 8px 16px;
-            border-radius: 20px;
-            background: rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        .nav-link:hover {
+        .user-icon {
+            width: 45px;
+            height: 45px;
             background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-2px);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .user-icon:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+            border-color: white;
         }
 
         /* Main Container */
@@ -151,7 +223,7 @@
             left: 0;
             right: 0;
             height: 4px;
-            background: linear-gradient(90deg, #FF6B6B, #4ECDC4, #45B7D1, #96CEB4);
+            background: linear-gradient(90deg, #4CAF50, #f44336, #4CAF50);
             background-size: 300% 300%;
             animation: gradient 3s ease infinite;
         }
@@ -174,7 +246,7 @@
         /* Stats Bar */
         .stats {
             display: flex;
-            gap: 20px;
+            gap: 30px;
             margin-top: 20px;
             padding: 15px 20px;
             background: rgba(255, 255, 255, 0.1);
@@ -183,6 +255,7 @@
             border-radius: 12px;
             border: 1px solid rgba(255, 255, 255, 0.2);
             color: white;
+            justify-content: center;
         }
 
         .stat-item {
@@ -192,11 +265,11 @@
         }
 
         .stat-dot {
-            width: 8px;
-            height: 8px;
+            width: 10px;
+            height: 10px;
             background: #4ECDC4;
             border-radius: 50%;
-            box-shadow: 0 0 10px #4ECDC4;
+            box-shadow: 0 0 15px currentColor;
         }
 
         /* Loading Animation */
@@ -223,10 +296,11 @@
         }
 
         .loader {
-            width: 50px;
-            height: 50px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #764ba2;
+            width: 60px;
+            height: 60px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #4CAF50;
+            border-right: 4px solid #f44336;
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
@@ -243,13 +317,22 @@
             }
 
             .nav-container {
-                flex-direction: column;
-                gap: 10px;
+                flex-direction: row;
             }
 
-            .nav-links {
-                width: 100%;
-                justify-content: center;
+            .logo-text {
+                font-size: 32px;
+            }
+            
+            .logo-text .f-letter,
+            .logo-text .e-letter {
+                font-size: 40px;
+            }
+            
+            .logo-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 22px;
             }
 
             .drive-card {
@@ -259,10 +342,7 @@
 
             .stats {
                 flex-wrap: wrap;
-            }
-
-            .logo-text {
-                font-size: 20px;
+                gap: 15px;
             }
         }
 
@@ -293,6 +373,14 @@
             font-size: 12px;
             background: rgba(0, 0, 0, 0.1);
         }
+
+        /* Gabriola ফন্টের জন্য ফ্যালব্যাক */
+        @font-face {
+            font-family: 'Gabriola';
+            src: local('Gabriola'), local('Gabriola Regular');
+            font-weight: bold;
+            font-style: normal;
+        }
     </style>
 </head>
 <body>
@@ -304,14 +392,20 @@
                 <div class="logo-icon">
                     <span>f</span>
                 </div>
-                <span class="logo-text">Cloud</span>
+                <div class="logo-text">
+                    <span class="f-letter">f</span>
+                    <span class="software-text">
+                        <span class="software-part">Softwar</span>
+                    </span>
+                    <span class="e-letter">e</span>
+                </div>
             </div>
-            <div class="nav-links">
-                <a href="#" class="nav-link">Dashboard</a>
-                <a href="#" class="nav-link">Files</a>
-                <a href="#" class="nav-link">Shared</a>
-                <a href="#" class="nav-link">Recent</a>
-                <a href="#" class="nav-link">Starred</a>
+            
+            <!-- শুধু ইউজার আইকন রেখেছি, বাটনগুলো বাদ -->
+            <div class="user-menu">
+                <div class="user-icon" title="User Profile">
+                    <span>👤</span>
+                </div>
             </div>
         </div>
     </nav>
@@ -324,7 +418,7 @@
             <i>→</i>
             <a href="#">Drive</a>
             <i>→</i>
-            <span>f Cloud Storage</span>
+            <span>f Software Cloud</span>
         </div>
 
         <!-- Drive Viewer Card -->
@@ -345,15 +439,15 @@
         <!-- Stats Bar -->
         <div class="stats">
             <div class="stat-item">
-                <span class="stat-dot"></span>
+                <span class="stat-dot" style="background: #4CAF50; box-shadow: 0 0 10px #4CAF50;"></span>
                 <span>Connected to Google Drive</span>
             </div>
             <div class="stat-item">
-                <span class="stat-dot"></span>
+                <span class="stat-dot" style="background: #f44336; box-shadow: 0 0 10px #f44336;"></span>
                 <span>Grid View Active</span>
             </div>
             <div class="stat-item">
-                <span class="stat-dot"></span>
+                <span class="stat-dot" style="background: #764ba2;"></span>
                 <span>Secure Connection</span>
             </div>
         </div>
@@ -361,7 +455,7 @@
 
     <!-- Footer -->
     <footer class="footer">
-        <p>© 2026 f Cloud. All rights reserved. | Abdullah Fahim</p>
+        <p>© 2026 f Software. All rights reserved. | Abdullah Fahim</p>
     </footer>
 
     <script>
@@ -384,16 +478,6 @@
 
         // Initial loader
         showLoader();
-
-        // Add smooth scroll behavior
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                document.querySelector(this.getAttribute('href')).scrollIntoView({
-                    behavior: 'smooth'
-                });
-            });
-        });
     </script>
 
 </body>

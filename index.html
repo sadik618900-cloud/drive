@@ -1,135 +1,164 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>Drive Cloud Dashboard</title>
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <script src="https://apis.google.com/js/api.js"></script>
-  <style>
-    body { font-family: Arial, padding: 20px; }
-    button { padding: 8px 12px; margin: 5px; }
-    .file { margin: 8px 0; }
-  </style>
+<meta charset="UTF-8">
+<title>Sadik Cloud</title>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+body { font-family: Arial; background:#f4f6f9; padding:20px; }
+h2 { text-align:center; }
+.topbar { text-align:center; margin-bottom:20px; }
+button { padding:8px 14px; margin:5px; cursor:pointer; }
+input[type="text"] { padding:8px; width:250px; }
+.grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:15px; }
+.card {
+  background:white;
+  padding:15px;
+  border-radius:10px;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+.card h4 { margin:0 0 10px 0; word-break:break-word; }
+.card a { text-decoration:none; color:#007bff; }
+.admin { margin-top:10px; }
+</style>
 </head>
 <body>
 
-  <h2>Drive Cloud Dashboard</h2>
+<h2>☁ Sadik Cloud Storage</h2>
 
+<div class="topbar">
   <div id="loginDiv"></div>
   <button id="logoutBtn" style="display:none;">Logout</button>
-
   <br><br>
+  <input type="text" id="searchBox" placeholder="Search file..." onkeyup="filterFiles()">
+  <br><br>
+  <input type="file" id="fileInput" style="display:none;">
+  <button id="uploadBtn" style="display:none;">Upload</button>
+</div>
 
-  <input type="file" id="fileInput" style="display:none;" />
-  <button id="uploadBtn" style="display:none;">Upload File</button>
+<div class="grid" id="fileList"></div>
 
-  <h3>Files:</h3>
-  <div id="fileList"></div>
+<script>
 
-  <script>
+const CLIENT_ID = "616933700070-sgh79m0pe5gskbfsg57ok4fvedmg2dev.apps.googleusercontent.com";
+const ADMIN_EMAIL = "sadik618900@gmail.com";
+const PUBLIC_FOLDER_ID = "1KHCBi0YJlQJOGS4V9P-pHnHHLpNrv_Y0";
 
-    const CLIENT_ID = "616933700070-sgh79m0pe5gskbfsg57ok4fvedmg2dev.apps.googleusercontent.com";
-    const DISCOVERY_DOC = "https://www.googleapis.com/discovery/v1/apis/drive/v3/rest";
-    const SCOPES = "https://www.googleapis.com/auth/drive.file";
-    const ADMIN_EMAIL = "sadik618900@gmail.com";
-    const PUBLIC_FOLDER_ID = "1KHCBi0YJlQJOGS4V9P-pHnHHLpNrv_Y0";
+let accessToken = null;
+let userEmail = null;
+let allFiles = [];
 
-    let tokenClient;
-    let accessToken;
-    let userEmail;
+function handleCredentialResponse(response) {
+  const decoded = JSON.parse(atob(response.credential.split('.')[1]));
+  userEmail = decoded.email;
+  accessToken = response.credential;
 
-    function initializeGapi() {
-      gapi.load('client', async () => {
-        await gapi.client.init({ discoveryDocs: [DISCOVERY_DOC] });
-      });
-    }
+  if (userEmail === ADMIN_EMAIL) {
+    document.getElementById("uploadBtn").style.display = "inline-block";
+    document.getElementById("fileInput").style.display = "inline-block";
+  }
 
-    function handleCredentialResponse(response) {
-      const decoded = JSON.parse(atob(response.credential.split('.')[1]));
-      userEmail = decoded.email;
-      accessToken = response.credential;
+  document.getElementById("logoutBtn").style.display = "inline-block";
+  document.getElementById("loginDiv").style.display = "none";
 
-      if (userEmail === ADMIN_EMAIL) {
-        document.getElementById("uploadBtn").style.display = "inline-block";
-        document.getElementById("fileInput").style.display = "inline-block";
-      }
+  listFiles();
+}
 
-      document.getElementById("logoutBtn").style.display = "inline-block";
-      document.getElementById("loginDiv").style.display = "none";
+async function listFiles() {
+  const res = await fetch(
+    `https://www.googleapis.com/drive/v3/files?q='${PUBLIC_FOLDER_ID}'+in+parents&fields=files(id,name,mimeType)`,
+    { headers: { Authorization: `Bearer ${accessToken}` } }
+  );
 
-      listPublicFiles();
-    }
+  const data = await res.json();
+  allFiles = data.files || [];
+  renderFiles(allFiles);
+}
 
-    async function listPublicFiles() {
-      const url = `https://www.googleapis.com/drive/v3/files?q='${PUBLIC_FOLDER_ID}'+in+parents&fields=files(id,name)`;
-      const res = await fetch(url, {
-        headers: { Authorization: `Bearer ${accessToken}` }
-      });
-      const data = await res.json();
+function renderFiles(files) {
+  const container = document.getElementById("fileList");
+  container.innerHTML = "";
 
-      const fileList = document.getElementById("fileList");
-      fileList.innerHTML = "";
+  if (files.length === 0) {
+    container.innerHTML = "<p>No files found.</p>";
+    return;
+  }
 
-      if (!data.files || data.files.length === 0) {
-        fileList.innerHTML = "No files found.";
-        return;
-      }
+  files.forEach(file => {
+    const div = document.createElement("div");
+    div.className = "card";
 
-      data.files.forEach(file => {
-        const div = document.createElement("div");
-        div.className = "file";
-        div.innerHTML = `
-          <a href="https://drive.google.com/file/d/${file.id}/view" target="_blank">
-            ${file.name}
-          </a>
-        `;
-        fileList.appendChild(div);
-      });
-    }
+    div.innerHTML = `
+      <h4>${file.name}</h4>
+      <a href="https://drive.google.com/file/d/${file.id}/view" target="_blank">Download</a>
+      ${userEmail === ADMIN_EMAIL ? `
+      <div class="admin">
+        <button onclick="deleteFile('${file.id}')">Delete</button>
+      </div>` : ``}
+    `;
 
-    document.getElementById("uploadBtn").onclick = async () => {
-      const file = document.getElementById("fileInput").files[0];
-      if (!file) return alert("Select a file first");
+    container.appendChild(div);
+  });
+}
 
-      const metadata = {
-        name: file.name,
-        parents: [PUBLIC_FOLDER_ID]
-      };
+function filterFiles() {
+  const keyword = document.getElementById("searchBox").value.toLowerCase();
+  const filtered = allFiles.filter(file =>
+    file.name.toLowerCase().includes(keyword)
+  );
+  renderFiles(filtered);
+}
 
-      const form = new FormData();
-      form.append("metadata", new Blob([JSON.stringify(metadata)], { type: "application/json" }));
-      form.append("file", file);
+document.getElementById("uploadBtn").onclick = async () => {
+  const file = document.getElementById("fileInput").files[0];
+  if (!file) return alert("Select a file first");
 
-      await fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart", {
-        method: "POST",
-        headers: { Authorization: `Bearer ${accessToken}` },
-        body: form
-      });
+  const metadata = {
+    name: file.name,
+    parents: [PUBLIC_FOLDER_ID]
+  };
 
-      alert("Uploaded Successfully!");
-      listPublicFiles();
-    };
+  const form = new FormData();
+  form.append("metadata", new Blob([JSON.stringify(metadata)], { type: "application/json" }));
+  form.append("file", file);
 
-    document.getElementById("logoutBtn").onclick = () => {
-      location.reload();
-    };
+  await fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${accessToken}` },
+    body: form
+  });
 
-    window.onload = () => {
-      initializeGapi();
-      google.accounts.id.initialize({
-        client_id: CLIENT_ID,
-        callback: handleCredentialResponse
-      });
+  alert("Uploaded Successfully!");
+  listFiles();
+};
 
-      google.accounts.id.renderButton(
-        document.getElementById("loginDiv"),
-        { theme: "outline", size: "large" }
-      );
+async function deleteFile(fileId) {
+  if (!confirm("Delete this file?")) return;
 
-      // Always list public files (even before login)
-      listPublicFiles();
-    };
+  await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${accessToken}` }
+  });
 
-  </script>
+  alert("Deleted!");
+  listFiles();
+}
+
+document.getElementById("logoutBtn").onclick = () => location.reload();
+
+window.onload = () => {
+  google.accounts.id.initialize({
+    client_id: CLIENT_ID,
+    callback: handleCredentialResponse
+  });
+
+  google.accounts.id.renderButton(
+    document.getElementById("loginDiv"),
+    { theme: "outline", size: "large" }
+  );
+};
+
+</script>
+
 </body>
 </html>

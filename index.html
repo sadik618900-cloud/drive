@@ -203,28 +203,6 @@ iframe{
     font-size:12px;
     background:rgba(0,0,0,.3);
 }
-
-/* EXTRA MOBILE OPTIMIZATION */
-@media (max-width:600px){
-
-.logo-text{
-    font-size:22px;
-}
-
-.nav-link{
-    font-size:12px;
-    padding:6px 12px;
-}
-
-.drive-card{
-    height:55vh;
-}
-
-.stats{
-    font-size:12px;
-}
-
-}
 </style>
 </head>
 
@@ -242,6 +220,7 @@ iframe{
 <button class="nav-link active" onclick="changeFolder('photos')" id="btnPhotos">📸 Photos</button>
 <button class="nav-link" onclick="changeFolder('videos')" id="btnVideos">🎥 Videos</button>
 <button class="nav-link" onclick="changeFolder('other')" id="btnOther">📁 Other Files</button>
+<button class="nav-link" onclick="changeFolder('madrasah')" id="btnMadrasah">📚 Madrasah</button>
 </div>
 
 <div class="user-profile">
@@ -285,7 +264,8 @@ onload="hideLoader()">
 const folders={
 photos:'1Td0P4syxyk7khNQlTiWFraBr-WcY4hjk',
 videos:'1Bkb60c7PLUTurVl0FoU2zq3GqxP2lHpI',
-other:'1oCWcDaL2TbCPYbiqxvhYrjTjopssgX8U'
+other:'1oCWcDaL2TbCPYbiqxvhYrjTjopssgX8U',
+madrasah:'1T_xsdXiREw7Lo15fXEpnIQUuIGUbjFwM'
 };
 
 function changeFolder(folderKey){
@@ -298,7 +278,8 @@ document.getElementById(`btn${folderKey.charAt(0).toUpperCase()+folderKey.slice(
 const folderNames={
 photos:'Photos',
 videos:'Videos',
-other:'Other Files'
+other:'Other Files',
+madrasah:'Madrasah'
 };
 
 document.getElementById('currentFolder').textContent=folderNames[folderKey];

@@ -1,76 +1,126 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <title>GitHub Repo File Viewer</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f4f6f8;
-            padding: 30px;
-        }
-        h1 {
-            text-align: center;
-        }
-        .container {
-            max-width: 800px;
-            margin: auto;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-        ul {
-            list-style: none;
-            padding: 0;
-        }
-        li {
-            padding: 8px;
-            border-bottom: 1px solid #eee;
-        }
-        li:hover {
-            background: #f0f0f0;
-        }
-        a {
-            text-decoration: none;
-            color: #0366d6;
-        }
-    </style>
+<meta charset="UTF-8">
+<title>My Drive Viewer</title>
+
+<style>
+body {
+    font-family: Arial;
+    background: #f2f4f8;
+    padding: 20px;
+}
+.container {
+    max-width: 900px;
+    margin: auto;
+}
+.card {
+    background: white;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 10px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+}
+img {
+    max-width: 100%;
+    border-radius: 8px;
+}
+video {
+    width: 100%;
+    border-radius: 8px;
+}
+button {
+    margin-top: 10px;
+    padding: 6px 12px;
+    border: none;
+    background: #0366d6;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+}
+button:hover {
+    background: #024c9a;
+}
+</style>
 </head>
+
 <body>
 
 <div class="container">
-    <h1>📁 Repo File List</h1>
-    <ul id="fileList"></ul>
+    <h2>📂 My Drive Files</h2>
+    <div id="fileContainer"></div>
 </div>
 
 <script>
-    const username = "sadik618900-cloud";
-    const repo = "drive";
-    const branch = "main"; // master হলে master লিখবে
+const username = "sadik618900-cloud";
+const repo = "drive";
+const branch = "main";
 
-    const apiUrl = `https://api.github.com/repos/${username}/${repo}/git/trees/${branch}?recursive=1`;
+const apiUrl = `https://api.github.com/repos/${username}/${repo}/git/trees/${branch}?recursive=1`;
 
-    fetch(apiUrl)
-        .then(response => response.json())
-        .then(data => {
-            const fileList = document.getElementById("fileList");
+fetch(apiUrl)
+.then(res => res.json())
+.then(data => {
+    const container = document.getElementById("fileContainer");
 
-            data.tree.forEach(item => {
-                if (item.type === "blob") {
-                    const li = document.createElement("li");
-                    const link = document.createElement("a");
+    data.tree.forEach(file => {
 
-                    link.href = `https://github.com/${username}/${repo}/blob/${branch}/${item.path}`;
-                    link.target = "_blank";
-                    link.textContent = item.path;
+        if (file.type !== "blob") return;
 
-                    li.appendChild(link);
-                    fileList.appendChild(li);
-                }
-            });
-        })
-        .catch(error => console.error("Error:", error));
+        const filePath = file.path;
+        const rawUrl = `https://raw.githubusercontent.com/${username}/${repo}/${branch}/${filePath}`;
+        const extension = filePath.split('.').pop().toLowerCase();
+
+        const imageExtensions = ["jpg","jpeg","png","gif","webp"];
+        const videoExtensions = ["mp4","webm","ogg"];
+
+        if (imageExtensions.includes(extension)) {
+
+            const card = document.createElement("div");
+            card.className = "card";
+
+            const img = document.createElement("img");
+            img.src = rawUrl;
+
+            const downloadBtn = document.createElement("button");
+            downloadBtn.innerText = "Download";
+            downloadBtn.onclick = () => {
+                window.open(rawUrl, "_blank");
+            };
+
+            card.appendChild(img);
+            card.appendChild(downloadBtn);
+            container.appendChild(card);
+
+        } else if (videoExtensions.includes(extension)) {
+
+            const card = document.createElement("div");
+            card.className = "card";
+
+            const title = document.createElement("p");
+            title.innerText = "🎥 " + filePath;
+
+            const video = document.createElement("video");
+            video.src = rawUrl;
+            video.controls = true;
+            video.style.display = "none";
+
+            const showBtn = document.createElement("button");
+            showBtn.innerText = "Play Video";
+            showBtn.onclick = () => {
+                video.style.display = "block";
+            };
+
+            card.appendChild(title);
+            card.appendChild(showBtn);
+            card.appendChild(video);
+            container.appendChild(card);
+        }
+
+    });
+
+})
+.catch(err => console.log(err));
 </script>
 
 </body>

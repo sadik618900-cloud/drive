@@ -2,17 +2,41 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>My Drive Viewer</title>
+<title>My Drive</title>
 
 <style>
 body {
     font-family: Arial;
+    margin: 0;
     background: #f2f4f8;
-    padding: 20px;
+}
+header {
+    background: #0366d6;
+    color: white;
+    padding: 15px;
+    text-align: center;
+}
+nav {
+    text-align: center;
+    padding: 15px;
+    background: white;
+}
+nav button {
+    margin: 5px;
+    padding: 8px 15px;
+    border: none;
+    background: #0366d6;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+}
+nav button:hover {
+    background: #024c9a;
 }
 .container {
     max-width: 900px;
     margin: auto;
+    padding: 20px;
 }
 .card {
     background: white;
@@ -21,34 +45,34 @@ body {
     border-radius: 10px;
     box-shadow: 0 3px 8px rgba(0,0,0,0.1);
 }
-img {
-    max-width: 100%;
-    border-radius: 8px;
-}
-video {
+img, video {
     width: 100%;
     border-radius: 8px;
-}
-button {
     margin-top: 10px;
-    padding: 6px 12px;
-    border: none;
-    background: #0366d6;
-    color: white;
-    border-radius: 5px;
-    cursor: pointer;
 }
-button:hover {
-    background: #024c9a;
+a {
+    text-decoration: none;
+    color: #0366d6;
 }
 </style>
 </head>
 
 <body>
 
-<div class="container">
-    <h2>📂 My Drive Files</h2>
-    <div id="fileContainer"></div>
+<header>
+    <h2>📂 My Drive</h2>
+</header>
+
+<nav>
+    <button onclick="showSection('home')">🏠 Home</button>
+    <button onclick="showSection('images')">🖼 Images</button>
+    <button onclick="showSection('videos')">🎥 Videos</button>
+    <button onclick="showSection('files')">📄 Other Files</button>
+</nav>
+
+<div class="container" id="content">
+    <h3>Welcome 👋</h3>
+    <p>Select a category above.</p>
 </div>
 
 <script>
@@ -56,71 +80,63 @@ const username = "sadik618900-cloud";
 const repo = "drive";
 const branch = "main";
 
-const apiUrl = `https://api.github.com/repos/${username}/${repo}/git/trees/${branch}?recursive=1`;
+const imageExt = ["jpg","jpeg","png","gif","webp"];
+const videoExt = ["mp4","webm","ogg"];
 
-fetch(apiUrl)
-.then(res => res.json())
-.then(data => {
-    const container = document.getElementById("fileContainer");
+let allFiles = [];
 
-    data.tree.forEach(file => {
+fetch(`https://api.github.com/repos/${username}/${repo}/git/trees/${branch}?recursive=1`)
+.then(res=>res.json())
+.then(data=>{
+    allFiles = data.tree.filter(file => file.type === "blob");
+});
 
-        if (file.type !== "blob") return;
+function showSection(type){
+    const container = document.getElementById("content");
+    container.innerHTML = "";
 
-        const filePath = file.path;
-        const rawUrl = `https://raw.githubusercontent.com/${username}/${repo}/${branch}/${filePath}`;
-        const extension = filePath.split('.').pop().toLowerCase();
+    if(type === "home"){
+        container.innerHTML = "<h3>Welcome 👋</h3><p>Select a category above.</p>";
+        return;
+    }
 
-        const imageExtensions = ["jpg","jpeg","png","gif","webp"];
-        const videoExtensions = ["mp4","webm","ogg"];
+    allFiles.forEach(file=>{
+        const ext = file.path.split('.').pop().toLowerCase();
+        const raw = `https://raw.githubusercontent.com/${username}/${repo}/${branch}/${file.path}`;
 
-        if (imageExtensions.includes(extension)) {
-
+        if(type === "images" && imageExt.includes(ext)){
             const card = document.createElement("div");
-            card.className = "card";
-
-            const img = document.createElement("img");
-            img.src = rawUrl;
-
-            const downloadBtn = document.createElement("button");
-            downloadBtn.innerText = "Download";
-            downloadBtn.onclick = () => {
-                window.open(rawUrl, "_blank");
-            };
-
-            card.appendChild(img);
-            card.appendChild(downloadBtn);
-            container.appendChild(card);
-
-        } else if (videoExtensions.includes(extension)) {
-
-            const card = document.createElement("div");
-            card.className = "card";
-
-            const title = document.createElement("p");
-            title.innerText = "🎥 " + filePath;
-
-            const video = document.createElement("video");
-            video.src = rawUrl;
-            video.controls = true;
-            video.style.display = "none";
-
-            const showBtn = document.createElement("button");
-            showBtn.innerText = "Play Video";
-            showBtn.onclick = () => {
-                video.style.display = "block";
-            };
-
-            card.appendChild(title);
-            card.appendChild(showBtn);
-            card.appendChild(video);
+            card.className="card";
+            card.innerHTML = `
+                <h4>${file.path}</h4>
+                <img src="${raw}">
+                <br><br>
+                <a href="${raw}" target="_blank">Download</a>
+            `;
             container.appendChild(card);
         }
 
-    });
+        else if(type === "videos" && videoExt.includes(ext)){
+            const card = document.createElement("div");
+            card.className="card";
+            card.innerHTML = `
+                <h4>${file.path}</h4>
+                <video src="${raw}" controls></video>
+            `;
+            container.appendChild(card);
+        }
 
-})
-.catch(err => console.log(err));
+        else if(type === "files" && !imageExt.includes(ext) && !videoExt.includes(ext)){
+            const card = document.createElement("div");
+            card.className="card";
+            card.innerHTML = `
+                <h4>${file.path}</h4>
+                <a href="${raw}" target="_blank">Download File</a>
+            `;
+            container.appendChild(card);
+        }
+    });
+}
 </script>
 
 </body>

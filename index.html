@@ -6,12 +6,7 @@
 <title>f Software</title>
 
 <style>
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:'Segoe UI',sans-serif;
-}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif;}
 
 body{
 background:#0f172a;
@@ -21,7 +16,7 @@ display:flex;
 flex-direction:column;
 }
 
-/* TOP NAV */
+/* NAVBAR */
 .navbar{
 background:#111827;
 padding:15px 25px;
@@ -29,8 +24,6 @@ display:flex;
 justify-content:space-between;
 align-items:center;
 flex-wrap:wrap;
-gap:15px;
-border-bottom:1px solid rgba(255,255,255,0.05);
 }
 
 .logo{
@@ -46,9 +39,6 @@ flex-wrap:wrap;
 }
 
 .menu button{
-display:flex;
-align-items:center;
-gap:8px;
 padding:10px 15px;
 border:none;
 border-radius:8px;
@@ -56,25 +46,13 @@ background:transparent;
 color:#cbd5e1;
 cursor:pointer;
 transition:0.3s;
-font-size:14px;
 }
 
-.menu button:hover{
-background:#1e293b;
-color:white;
-}
+.menu button:hover{background:#1e293b;color:white;}
+.menu button.active{background:#2563eb;color:white;}
 
-.menu button.active{
-background:#2563eb;
-color:white;
-}
-
-/* MAIN CONTENT */
-.main{
-flex:1;
-padding:30px;
-}
-
+/* MAIN */
+.main{flex:1;padding:30px;}
 .content{
 background:#1e293b;
 border-radius:20px;
@@ -85,21 +63,9 @@ overflow:hidden;
 }
 
 /* DASHBOARD */
-.dashboard{
-text-align:center;
-margin-top:80px;
-}
-
-.dashboard h1{
-font-size:32px;
-color:#38bdf8;
-margin-bottom:15px;
-}
-
-.dashboard p{
-color:#94a3b8;
-font-size:15px;
-}
+.dashboard{text-align:center;margin-top:80px;}
+.dashboard h1{font-size:32px;color:#38bdf8;margin-bottom:15px;}
+.dashboard p{color:#94a3b8;}
 
 /* IFRAME */
 iframe{
@@ -111,110 +77,94 @@ display:none;
 background:white;
 }
 
-/* LOADER */
-.loading{
+/* PASSWORD MODAL */
+.modal{
 position:absolute;
 inset:0;
-background:rgba(15,23,42,0.8);
+background:rgba(0,0,0,0.6);
 display:flex;
 justify-content:center;
 align-items:center;
 opacity:0;
 pointer-events:none;
 transition:0.3s;
-border-radius:20px;
 }
 
-.loading.active{
+.modal.active{
 opacity:1;
 pointer-events:all;
 }
 
-.loader{
-width:50px;
-height:50px;
-border:4px solid rgba(255,255,255,0.2);
-border-top:4px solid #38bdf8;
-border-radius:50%;
-animation:spin 1s linear infinite;
+.modal-box{
+background:#111827;
+padding:30px;
+border-radius:15px;
+width:300px;
+text-align:center;
 }
 
-@keyframes spin{
-0%{transform:rotate(0deg);}
-100%{transform:rotate(360deg);}
+.modal-box h3{
+margin-bottom:15px;
+color:#38bdf8;
 }
 
-/* MOBILE */
-@media(max-width:768px){
-.content{
-height:65vh;
-padding:20px;
+.modal-box input{
+width:100%;
+padding:10px;
+border:none;
+border-radius:8px;
+margin-bottom:15px;
 }
-.dashboard{
-margin-top:40px;
+
+.modal-box button{
+width:100%;
+padding:10px;
+border:none;
+border-radius:8px;
+background:#2563eb;
+color:white;
+cursor:pointer;
 }
+
+.error{
+color:#ef4444;
+font-size:13px;
+margin-top:8px;
+display:none;
 }
 </style>
 </head>
 
 <body>
 
-<!-- TOP NAVIGATION -->
 <div class="navbar">
 <div class="logo">f Software</div>
-
 <div class="menu">
-<button class="active" onclick="showDashboard()" id="btnDashboard">
-<!-- Home SVG -->
-<svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
-<path d="M3 12L12 3l9 9v9a1 1 0 0 1-1 1h-6v-6H10v6H4a1 1 0 0 1-1-1z"/>
-</svg>
-Dashboard
-</button>
-
-<button onclick="changeFolder('photos')" id="btnPhotos">
-<svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
-<path d="M4 4h16v16H4z"/>
-</svg>
-Photos
-</button>
-
-<button onclick="changeFolder('videos')" id="btnVideos">
-<svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
-<path d="M10 8l6 4-6 4z"/>
-</svg>
-Videos
-</button>
-
-<button onclick="changeFolder('other')" id="btnOther">
-<svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
-<path d="M3 6h18v12H3z"/>
-</svg>
-Other
-</button>
-
-<button onclick="changeFolder('madrasah')" id="btnMadrasah">
-<svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
-<path d="M12 3l9 4-9 4-9-4zM3 10l9 4 9-4v6l-9 4-9-4z"/>
-</svg>
-Madrasah
-</button>
+<button onclick="showDashboard()" class="active" id="btnDashboard">Dashboard</button>
+<button onclick="requestAccess('photos')" id="btnPhotos">Photos</button>
+<button onclick="requestAccess('videos')" id="btnVideos">Videos</button>
+<button onclick="requestAccess('other')" id="btnOther">Other</button>
+<button onclick="requestAccess('madrasah')" id="btnMadrasah">Madrasah</button>
 </div>
 </div>
 
-<!-- MAIN -->
 <div class="main">
 <div class="content">
 
 <div class="dashboard" id="dashboardSection">
 <h1>Welcome to f Software Cloud</h1>
-<p>Select a section from the top menu to view your files.</p>
+<p>Password = Current 12 Hour Time (Hour + Minute)</p>
 </div>
 
 <iframe id="driveIframe"></iframe>
 
-<div class="loading" id="loading">
-<div class="loader"></div>
+<div class="modal" id="passwordModal">
+<div class="modal-box">
+<h3>Enter Dynamic Password</h3>
+<input type="password" id="passwordInput" placeholder="Enter password">
+<button onclick="verifyPassword()">Unlock</button>
+<div class="error" id="errorMsg">Wrong Password</div>
+</div>
 </div>
 
 </div>
@@ -231,12 +181,20 @@ madrasah:'1T_xsdXiREw7Lo15fXEpnIQUuIGUbjFwM'
 
 let selectedFolder=null;
 
-/* REAL TIME PASSWORD GENERATOR */
+/* 12 HOUR BASED PASSWORD */
 function generatePassword(){
-const part1 = String.fromCharCode(72); // H
-const part2 = String.fromCharCode(77); // M
-const number = 700 + 53; // 753
-return part1 + part2 + number;
+const now = new Date();
+let hour = now.getHours();
+let minute = now.getMinutes();
+
+/* convert 24h to 12h */
+hour = hour % 12;
+hour = hour ? hour : 12; 
+
+/* remove leading zero from minute */
+minute = minute.toString().replace(/^0/, '');
+
+return hour.toString() + minute.toString();
 }
 
 function resetActive(){

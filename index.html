@@ -3,13 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>f Software</title>
+<title>f Software Cloud</title>
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif;}
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Segoe UI',sans-serif;
+}
 
 body{
-background:#0f172a;
+background:linear-gradient(135deg,#0f172a,#1e293b);
 color:white;
 min-height:100vh;
 display:flex;
@@ -18,15 +23,20 @@ flex-direction:column;
 
 /* NAVBAR */
 .navbar{
-background:#111827;
-padding:15px 25px;
+background:rgba(17,24,39,0.8);
+backdrop-filter:blur(15px);
+padding:15px 30px;
 display:flex;
 justify-content:space-between;
 align-items:center;
 flex-wrap:wrap;
+border-bottom:1px solid rgba(255,255,255,0.05);
 }
 
 .logo{
+display:flex;
+align-items:center;
+gap:10px;
 font-size:20px;
 font-weight:bold;
 color:#38bdf8;
@@ -34,47 +44,83 @@ color:#38bdf8;
 
 .menu{
 display:flex;
-gap:10px;
+gap:12px;
 flex-wrap:wrap;
 }
 
 .menu button{
-padding:10px 15px;
+display:flex;
+align-items:center;
+gap:8px;
+padding:10px 16px;
 border:none;
-border-radius:8px;
+border-radius:10px;
 background:transparent;
 color:#cbd5e1;
 cursor:pointer;
 transition:0.3s;
+font-size:14px;
 }
 
-.menu button:hover{background:#1e293b;color:white;}
-.menu button.active{background:#2563eb;color:white;}
+.menu button svg{
+width:18px;
+height:18px;
+}
+
+.menu button:hover{
+background:#1e293b;
+color:white;
+}
+
+.menu button.active{
+background:#2563eb;
+color:white;
+}
 
 /* MAIN */
-.main{flex:1;padding:30px;}
-.content{
-background:#1e293b;
-border-radius:20px;
+.main{
+flex:1;
 padding:30px;
+}
+
+.content{
+background:rgba(30,41,59,0.7);
+backdrop-filter:blur(20px);
+border-radius:25px;
+padding:40px;
 height:75vh;
 position:relative;
+box-shadow:0 30px 60px rgba(0,0,0,0.4);
 overflow:hidden;
 }
 
 /* DASHBOARD */
-.dashboard{text-align:center;margin-top:80px;}
-.dashboard h1{font-size:32px;color:#38bdf8;margin-bottom:15px;}
-.dashboard p{color:#94a3b8;}
+.dashboard{
+text-align:center;
+margin-top:70px;
+animation:fadeIn 0.6s ease;
+}
+
+.dashboard h1{
+font-size:36px;
+color:#38bdf8;
+margin-bottom:15px;
+}
+
+.dashboard p{
+color:#94a3b8;
+font-size:15px;
+}
 
 /* IFRAME */
 iframe{
 width:100%;
 height:100%;
 border:none;
-border-radius:15px;
+border-radius:20px;
 display:none;
 background:white;
+animation:fadeIn 0.4s ease;
 }
 
 /* PASSWORD MODAL */
@@ -96,34 +142,50 @@ pointer-events:all;
 }
 
 .modal-box{
-background:#111827;
-padding:30px;
-border-radius:15px;
-width:300px;
+background:rgba(17,24,39,0.95);
+padding:35px;
+border-radius:20px;
+width:320px;
 text-align:center;
+box-shadow:0 20px 40px rgba(0,0,0,0.5);
+animation:popUp 0.3s ease;
 }
 
-.modal-box h3{
+.modal-box svg{
+width:40px;
+height:40px;
 margin-bottom:15px;
 color:#38bdf8;
 }
 
+.modal-box h3{
+margin-bottom:15px;
+}
+
 .modal-box input{
 width:100%;
-padding:10px;
+padding:12px;
 border:none;
-border-radius:8px;
+border-radius:10px;
 margin-bottom:15px;
+background:#1e293b;
+color:white;
+font-size:14px;
 }
 
 .modal-box button{
 width:100%;
-padding:10px;
+padding:12px;
 border:none;
-border-radius:8px;
+border-radius:10px;
 background:#2563eb;
 color:white;
 cursor:pointer;
+transition:0.3s;
+}
+
+.modal-box button:hover{
+background:#1d4ed8;
 }
 
 .error{
@@ -132,15 +194,49 @@ font-size:13px;
 margin-top:8px;
 display:none;
 }
+
+/* ANIMATIONS */
+@keyframes fadeIn{
+from{opacity:0;transform:translateY(10px);}
+to{opacity:1;transform:translateY(0);}
+}
+
+@keyframes popUp{
+from{transform:scale(0.9);opacity:0;}
+to{transform:scale(1);opacity:1;}
+}
+
+/* MOBILE */
+@media(max-width:768px){
+.content{
+height:65vh;
+padding:25px;
+}
+.dashboard h1{
+font-size:26px;
+}
+}
 </style>
 </head>
 
 <body>
 
 <div class="navbar">
-<div class="logo">f Software</div>
+<div class="logo">
+<svg fill="currentColor" viewBox="0 0 24 24">
+<path d="M12 2l9 4-9 4-9-4zM3 10l9 4 9-4v8l-9 4-9-4z"/>
+</svg>
+f Software
+</div>
+
 <div class="menu">
-<button onclick="showDashboard()" class="active" id="btnDashboard">Dashboard</button>
+<button onclick="showDashboard()" class="active" id="btnDashboard">
+<svg fill="currentColor" viewBox="0 0 24 24">
+<path d="M3 12L12 3l9 9v9a1 1 0 0 1-1 1h-6v-6H10v6H4a1 1 0 0 1-1-1z"/>
+</svg>
+Dashboard
+</button>
+
 <button onclick="requestAccess('photos')" id="btnPhotos">Photos</button>
 <button onclick="requestAccess('videos')" id="btnVideos">Videos</button>
 <button onclick="requestAccess('other')" id="btnOther">Other</button>
@@ -152,7 +248,7 @@ display:none;
 <div class="content">
 
 <div class="dashboard" id="dashboardSection">
-<h1>Welcome to f Software Cloud</h1>
+<h1>Secure Cloud Dashboard</h1>
 <p>Password = Current 12 Hour Time (Hour + Minute)</p>
 </div>
 
@@ -160,6 +256,9 @@ display:none;
 
 <div class="modal" id="passwordModal">
 <div class="modal-box">
+<svg fill="currentColor" viewBox="0 0 24 24">
+<path d="M12 1a5 5 0 0 0-5 5v3H5a2 2 0 0 0-2 2v9h18v-9a2 2 0 0 0-2-2h-2V6a5 5 0 0 0-5-5zm-3 8V6a3 3 0 0 1 6 0v3H9z"/>
+</svg>
 <h3>Enter Dynamic Password</h3>
 <input type="password" id="passwordInput" placeholder="Enter password">
 <button onclick="verifyPassword()">Unlock</button>
@@ -181,17 +280,15 @@ madrasah:'1T_xsdXiREw7Lo15fXEpnIQUuIGUbjFwM'
 
 let selectedFolder=null;
 
-/* 12 HOUR BASED PASSWORD */
+/* 12 HOUR PASSWORD */
 function generatePassword(){
 const now = new Date();
 let hour = now.getHours();
 let minute = now.getMinutes();
 
-/* convert 24h to 12h */
 hour = hour % 12;
-hour = hour ? hour : 12; 
+hour = hour ? hour : 12;
 
-/* remove leading zero from minute */
 minute = minute.toString().replace(/^0/, '');
 
 return hour.toString() + minute.toString();

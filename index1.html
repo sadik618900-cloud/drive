@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>GitHub Repo File Viewer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            padding: 30px;
+        }
+        h1 {
+            text-align: center;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+        }
+        li:hover {
+            background: #f0f0f0;
+        }
+        a {
+            text-decoration: none;
+            color: #0366d6;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>📁 Repo File List</h1>
+    <ul id="fileList"></ul>
+</div>
+
+<script>
+    const username = "sadik618900-cloud";
+    const repo = "drive";
+    const branch = "main"; // master হলে master লিখবে
+
+    const apiUrl = `https://api.github.com/repos/${username}/${repo}/git/trees/${branch}?recursive=1`;
+
+    fetch(apiUrl)
+        .then(response => response.json())
+        .then(data => {
+            const fileList = document.getElementById("fileList");
+
+            data.tree.forEach(item => {
+                if (item.type === "blob") {
+                    const li = document.createElement("li");
+                    const link = document.createElement("a");
+
+                    link.href = `https://github.com/${username}/${repo}/blob/${branch}/${item.path}`;
+                    link.target = "_blank";
+                    link.textContent = item.path;
+
+                    li.appendChild(link);
+                    fileList.appendChild(li);
+                }
+            });
+        })
+        .catch(error => console.error("Error:", error));
+</script>
+
+</body>
+</html>

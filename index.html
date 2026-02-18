@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>f Software Cloud</title>
+<title>f Software Premium</title>
 
 <style>
 *{
@@ -14,32 +14,51 @@ font-family:'Segoe UI',sans-serif;
 }
 
 body{
-background:linear-gradient(135deg,#0f172a,#1e293b);
-color:white;
 min-height:100vh;
 display:flex;
 flex-direction:column;
+color:white;
+transition:0.4s;
+overflow:hidden;
+}
+
+/* PREMIUM ANIMATED BACKGROUND */
+body::before{
+content:"";
+position:fixed;
+width:200%;
+height:200%;
+background:linear-gradient(45deg,#0f172a,#1e3a8a,#9333ea,#0f172a);
+background-size:400% 400%;
+animation:gradientMove 12s ease infinite;
+z-index:-1;
+}
+
+@keyframes gradientMove{
+0%{background-position:0% 50%;}
+50%{background-position:100% 50%;}
+100%{background-position:0% 50%;}
+}
+
+/* LIGHT MODE */
+body.light{
+color:#111;
+}
+
+body.light::before{
+background:linear-gradient(45deg,#ffffff,#dbeafe,#e0e7ff,#ffffff);
+background-size:400% 400%;
 }
 
 /* NAVBAR */
 .navbar{
-background:rgba(17,24,39,0.8);
+background:rgba(0,0,0,0.4);
 backdrop-filter:blur(15px);
 padding:15px 30px;
 display:flex;
 justify-content:space-between;
 align-items:center;
 flex-wrap:wrap;
-border-bottom:1px solid rgba(255,255,255,0.05);
-}
-
-.logo{
-display:flex;
-align-items:center;
-gap:10px;
-font-size:20px;
-font-weight:bold;
-color:#38bdf8;
 }
 
 .menu{
@@ -49,67 +68,62 @@ flex-wrap:wrap;
 }
 
 .menu button{
-display:flex;
-align-items:center;
-gap:8px;
-padding:10px 16px;
+padding:10px 15px;
 border:none;
 border-radius:10px;
-background:transparent;
-color:#cbd5e1;
+background:rgba(255,255,255,0.1);
+color:white;
 cursor:pointer;
 transition:0.3s;
-font-size:14px;
-}
-
-.menu button svg{
-width:18px;
-height:18px;
 }
 
 .menu button:hover{
-background:#1e293b;
-color:white;
+background:#2563eb;
 }
 
-.menu button.active{
-background:#2563eb;
-color:white;
+.toggle{
+cursor:pointer;
+padding:8px 12px;
+border-radius:8px;
+background:rgba(255,255,255,0.15);
 }
 
 /* MAIN */
 .main{
 flex:1;
-padding:30px;
+display:flex;
+justify-content:center;
+align-items:center;
+padding:20px;
 }
 
 .content{
-background:rgba(30,41,59,0.7);
+width:100%;
+max-width:1100px;
+height:75vh;
+background:rgba(0,0,0,0.4);
 backdrop-filter:blur(20px);
 border-radius:25px;
 padding:40px;
-height:75vh;
 position:relative;
-box-shadow:0 30px 60px rgba(0,0,0,0.4);
 overflow:hidden;
 }
 
-/* DASHBOARD */
 .dashboard{
 text-align:center;
-margin-top:70px;
-animation:fadeIn 0.6s ease;
+margin-top:40px;
 }
 
 .dashboard h1{
 font-size:36px;
-color:#38bdf8;
-margin-bottom:15px;
+margin-bottom:10px;
 }
 
-.dashboard p{
-color:#94a3b8;
-font-size:15px;
+.clock{
+font-size:40px;
+margin:20px 0;
+color:#38bdf8;
+font-weight:bold;
 }
 
 /* IFRAME */
@@ -120,14 +134,13 @@ border:none;
 border-radius:20px;
 display:none;
 background:white;
-animation:fadeIn 0.4s ease;
 }
 
-/* PASSWORD MODAL */
+/* MODAL */
 .modal{
 position:absolute;
 inset:0;
-background:rgba(0,0,0,0.6);
+background:rgba(0,0,0,0.7);
 display:flex;
 justify-content:center;
 align-items:center;
@@ -142,24 +155,11 @@ pointer-events:all;
 }
 
 .modal-box{
-background:rgba(17,24,39,0.95);
+background:#111827;
 padding:35px;
 border-radius:20px;
 width:320px;
 text-align:center;
-box-shadow:0 20px 40px rgba(0,0,0,0.5);
-animation:popUp 0.3s ease;
-}
-
-.modal-box svg{
-width:40px;
-height:40px;
-margin-bottom:15px;
-color:#38bdf8;
-}
-
-.modal-box h3{
-margin-bottom:15px;
 }
 
 .modal-box input{
@@ -170,7 +170,6 @@ border-radius:10px;
 margin-bottom:15px;
 background:#1e293b;
 color:white;
-font-size:14px;
 }
 
 .modal-box button{
@@ -181,39 +180,29 @@ border-radius:10px;
 background:#2563eb;
 color:white;
 cursor:pointer;
-transition:0.3s;
-}
-
-.modal-box button:hover{
-background:#1d4ed8;
 }
 
 .error{
 color:#ef4444;
 font-size:13px;
-margin-top:8px;
 display:none;
+margin-top:8px;
 }
 
-/* ANIMATIONS */
-@keyframes fadeIn{
-from{opacity:0;transform:translateY(10px);}
-to{opacity:1;transform:translateY(0);}
-}
-
-@keyframes popUp{
-from{transform:scale(0.9);opacity:0;}
-to{transform:scale(1);opacity:1;}
+.lock-info{
+color:#facc15;
+margin-top:10px;
+display:none;
 }
 
 /* MOBILE */
 @media(max-width:768px){
 .content{
-height:65vh;
+height:85vh;
 padding:25px;
 }
-.dashboard h1{
-font-size:26px;
+.clock{
+font-size:28px;
 }
 }
 </style>
@@ -222,33 +211,23 @@ font-size:26px;
 <body>
 
 <div class="navbar">
-<div class="logo">
-<svg fill="currentColor" viewBox="0 0 24 24">
-<path d="M12 2l9 4-9 4-9-4zM3 10l9 4 9-4v8l-9 4-9-4z"/>
-</svg>
-f Software
-</div>
-
 <div class="menu">
-<button onclick="showDashboard()" class="active" id="btnDashboard">
-<svg fill="currentColor" viewBox="0 0 24 24">
-<path d="M3 12L12 3l9 9v9a1 1 0 0 1-1 1h-6v-6H10v6H4a1 1 0 0 1-1-1z"/>
-</svg>
-Dashboard
-</button>
-
-<button onclick="requestAccess('photos')" id="btnPhotos">Photos</button>
-<button onclick="requestAccess('videos')" id="btnVideos">Videos</button>
-<button onclick="requestAccess('other')" id="btnOther">Other</button>
-<button onclick="requestAccess('madrasah')" id="btnMadrasah">Madrasah</button>
+<button onclick="showDashboard()">Dashboard</button>
+<button onclick="requestAccess('photos')">Photos</button>
+<button onclick="requestAccess('videos')">Videos</button>
+<button onclick="requestAccess('other')">Other</button>
+<button onclick="requestAccess('madrasah')">Madrasah</button>
 </div>
+
+<div class="toggle" onclick="toggleTheme()">🌙 / ☀</div>
 </div>
 
 <div class="main">
 <div class="content">
 
 <div class="dashboard" id="dashboardSection">
-<h1>Secure Cloud Dashboard</h1>
+<h1>Premium Secure Cloud</h1>
+<div class="clock" id="liveClock"></div>
 <p>Password = Current 12 Hour Time (Hour + Minute)</p>
 </div>
 
@@ -256,13 +235,11 @@ Dashboard
 
 <div class="modal" id="passwordModal">
 <div class="modal-box">
-<svg fill="currentColor" viewBox="0 0 24 24">
-<path d="M12 1a5 5 0 0 0-5 5v3H5a2 2 0 0 0-2 2v9h18v-9a2 2 0 0 0-2-2h-2V6a5 5 0 0 0-5-5zm-3 8V6a3 3 0 0 1 6 0v3H9z"/>
-</svg>
-<h3>Enter Dynamic Password</h3>
-<input type="password" id="passwordInput" placeholder="Enter password">
+<h3>Enter Password</h3>
+<input type="password" id="passwordInput">
 <button onclick="verifyPassword()">Unlock</button>
 <div class="error" id="errorMsg">Wrong Password</div>
+<div class="lock-info" id="lockInfo">System Locked! Enter Lock Password</div>
 </div>
 </div>
 
@@ -279,60 +256,94 @@ madrasah:'1T_xsdXiREw7Lo15fXEpnIQUuIGUbjFwM'
 };
 
 let selectedFolder=null;
+let attempts=0;
+let locked=false;
 
-/* 12 HOUR PASSWORD */
-function generatePassword(){
-const now = new Date();
-let hour = now.getHours();
-let minute = now.getMinutes();
+/* LIVE CLOCK */
+function updateClock(){
+const now=new Date();
+let hour=now.getHours();
+let minute=now.getMinutes();
+let second=now.getSeconds();
 
-hour = hour % 12;
-hour = hour ? hour : 12;
+let ampm=hour>=12?"PM":"AM";
+hour=hour%12;
+hour=hour?hour:12;
 
-minute = minute.toString().replace(/^0/, '');
+minute=minute.toString().padStart(2,'0');
+second=second.toString().padStart(2,'0');
 
-return hour.toString() + minute.toString();
+document.getElementById("liveClock").innerText=
+hour+":"+minute+":"+second+" "+ampm;
 }
 
-function resetActive(){
-document.querySelectorAll('.menu button').forEach(btn=>btn.classList.remove('active'));
+setInterval(updateClock,1000);
+updateClock();
+
+/* PASSWORD GENERATOR */
+function generatePassword(){
+const now=new Date();
+let hour=now.getHours();
+let minute=now.getMinutes();
+hour=hour%12;
+hour=hour?hour:12;
+minute=minute.toString().replace(/^0/,'');
+return hour+minute;
 }
 
 function showDashboard(){
-resetActive();
-document.getElementById('btnDashboard').classList.add('active');
-document.getElementById('dashboardSection').style.display="block";
-document.getElementById('driveIframe').style.display="none";
+document.getElementById("dashboardSection").style.display="block";
+document.getElementById("driveIframe").style.display="none";
 }
 
 function requestAccess(folder){
 selectedFolder=folder;
-document.getElementById('passwordModal').classList.add('active');
-document.getElementById('passwordInput').value="";
-document.getElementById('errorMsg').style.display="none";
+document.getElementById("passwordModal").classList.add("active");
+document.getElementById("passwordInput").value="";
 }
 
 function verifyPassword(){
-const input=document.getElementById('passwordInput').value;
-const realPassword = generatePassword();
+const input=document.getElementById("passwordInput").value;
 
-if(input === realPassword){
-document.getElementById('passwordModal').classList.remove('active');
+if(locked){
+if(input==="6189"){
+locked=false;
+attempts=0;
+document.getElementById("lockInfo").style.display="none";
+alert("System Unlocked");
+}else{
+alert("Wrong Lock Password");
+}
+return;
+}
+
+const realPassword=generatePassword();
+
+if(input===realPassword){
+attempts=0;
+document.getElementById("passwordModal").classList.remove("active");
 openFolder(selectedFolder);
 }else{
-document.getElementById('errorMsg').style.display="block";
+attempts++;
+document.getElementById("errorMsg").style.display="block";
+
+if(attempts>=3){
+locked=true;
+document.getElementById("lockInfo").style.display="block";
+}
 }
 }
 
 function openFolder(folder){
-resetActive();
-document.getElementById('btn'+folder.charAt(0).toUpperCase()+folder.slice(1)).classList.add('active');
-
-document.getElementById('dashboardSection').style.display="none";
-
-const iframe=document.getElementById('driveIframe');
+document.getElementById("dashboardSection").style.display="none";
+const iframe=document.getElementById("driveIframe");
 iframe.style.display="block";
 iframe.src=`https://drive.google.com/embeddedfolderview?id=${folders[folder]}#grid`;
+}
+
+/* DARK LIGHT TOGGLE */
+function toggleTheme(){
+document.body.classList.toggle("light");
 }
 
 </script>

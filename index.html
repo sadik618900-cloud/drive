@@ -3,23 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Secure Dashboard</title>
+<title>f cloud</title>
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Segoe UI}
 
 body{
-background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
-color:#fff;
 min-height:100vh;
+background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+color:white;
 transition:.4s;
 }
 
 body.light{
-background:#f4f4f4;
+background:#f2f2f2;
 color:#111;
 }
 
+/* HEADER */
 header{
 display:flex;
 justify-content:space-between;
@@ -27,6 +28,7 @@ align-items:center;
 padding:15px 20px;
 background:rgba(255,255,255,0.05);
 backdrop-filter:blur(10px);
+flex-wrap:wrap;
 }
 
 .menu{
@@ -53,12 +55,10 @@ background:#ddd;
 color:#111;
 }
 
-.menu button:hover{
-background:#00c6ff;
-}
-
+.menu button:hover,
 .menu button.active{
 background:#00c6ff;
+color:#000;
 }
 
 svg{
@@ -66,11 +66,19 @@ width:16px;
 height:16px;
 }
 
+/* DASHBOARD */
 .section{
-padding:40px;
+padding:50px 20px;
 text-align:center;
 }
 
+.clock{
+font-size:22px;
+margin-top:15px;
+font-weight:bold;
+}
+
+/* IFRAME */
 iframe{
 width:100%;
 height:80vh;
@@ -78,10 +86,11 @@ border:none;
 display:none;
 }
 
+/* PASSWORD MODAL */
 #passwordModal{
 position:fixed;
 inset:0;
-background:rgba(0,0,0,0.7);
+background:rgba(0,0,0,0.6);
 display:none;
 justify-content:center;
 align-items:center;
@@ -92,43 +101,58 @@ display:flex;
 }
 
 .modal-box{
-background:white;
-color:black;
+background:rgba(255,255,255,0.15);
+backdrop-filter:blur(15px);
 padding:30px;
-border-radius:10px;
+border-radius:15px;
+width:320px;
 text-align:center;
-width:300px;
+box-shadow:0 0 20px rgba(0,0,0,0.4);
 }
 
-.modal-box input{
+.modal-box h3{
+margin-bottom:15px;
+}
+
+.input-box{
+position:relative;
+}
+
+.input-box input{
 width:100%;
-padding:8px;
-margin-top:10px;
+padding:10px;
+border:none;
+border-radius:8px;
+outline:none;
+font-size:16px;
 }
 
-.modal-box button{
-margin-top:10px;
-padding:8px 12px;
+.submit-btn{
+margin-top:15px;
+padding:10px;
+width:100%;
+border:none;
+border-radius:8px;
+background:#00c6ff;
 cursor:pointer;
+font-weight:bold;
 }
 
 #errorMsg{
-color:red;
+color:#ff4d4d;
+margin-top:10px;
 display:none;
-margin-top:10px;
+font-size:14px;
 }
 
-.clock{
-font-size:20px;
-margin-top:10px;
-}
-
+/* TOGGLE */
 .theme-btn{
-cursor:pointer;
 padding:6px 10px;
-border-radius:6px;
-background:#00c6ff;
 border:none;
+border-radius:6px;
+cursor:pointer;
+background:#00c6ff;
+font-weight:bold;
 }
 
 </style>
@@ -139,29 +163,14 @@ border:none;
 <header>
 <div class="menu">
 <button id="btnDashboard" onclick="showDashboard()" class="active">
-<svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
-Dashboard
-</button>
-
-<button id="btnPhotos" onclick="requestAccess('photos')">
-<svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 19V5H3v14h18zM8.5 13.5l2.5 3 3.5-4.5L19 19H5l3.5-5.5z"/></svg>
-Photos
-</button>
-
-<button id="btnVideos" onclick="requestAccess('videos')">
-<svg viewBox="0 0 24 24" fill="currentColor"><path d="M17 10.5V6c0-1.1-.9-2-2-2H5C3.9 4 3 4.9 3 6v12c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2v-4.5l4 4v-11l-4 4z"/></svg>
-Videos
-</button>
-
-<button id="btnOther" onclick="requestAccess('other')">
-<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
-Other
-</button>
+<svg viewBox="0 0 24 24" fill="currentColor">
+<path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
+</svg>Dashboard</button>
 
 <button id="btnMadrasah" onclick="requestAccess('madrasah')">
-<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L1 7l11 5 9-4.09V17h2V7L12 2z"/></svg>
-Madrasah
-</button>
+<svg viewBox="0 0 24 24" fill="currentColor">
+<path d="M12 2L1 7l11 5 9-4.09V17h2V7L12 2z"/>
+</svg>Madrasah</button>
 </div>
 
 <button class="theme-btn" onclick="toggleTheme()">Toggle</button>
@@ -169,7 +178,7 @@ Madrasah
 
 <div id="dashboardSection" class="section">
 <h1>Secure Dashboard</h1>
-<p>Welcome to your protected system.</p>
+<p>Protected Access System</p>
 <div class="clock" id="liveClock"></div>
 </div>
 
@@ -177,27 +186,28 @@ Madrasah
 
 <div id="passwordModal">
 <div class="modal-box">
-<h3>Enter Password</h3>
-<input type="password" id="passwordInput">
-<button onclick="verifyPassword()">Submit</button>
+<h3>Enter Dynamic Password</h3>
+<div class="input-box">
+<input type="password" id="passwordInput" placeholder="Enter password">
+</div>
+<button class="submit-btn" onclick="verifyPassword()">Access Folder</button>
 <div id="errorMsg">Wrong Password</div>
 </div>
 </div>
 
 <script>
 
+/* GOOGLE DRIVE FOLDER */
 const folders={
-photos:'1Td0P4syxyk7khNQlTiWFraBr-WcYhjk',
-videos:'1Bkb60c7PLUTurVl0FoU2zq3GqxP2lHpI',
-other:'1oCWcDaL2TbCPYbiqxvhYrjTjopssgX8U',
 madrasah:'1T_xsdXiREw7Lo15fXEpnIQUuIGUbjFwM'
 };
 
 let selectedFolder=null;
 let wrongAttempts=0;
 let locked=false;
+let inactivityTimer=null;
 
-/* Live Clock */
+/* LIVE CLOCK */
 function updateClock(){
 const now=new Date();
 let h=now.getHours()%12||12;
@@ -208,7 +218,7 @@ document.getElementById("liveClock").innerText=`${h}:${m}:${s}`;
 setInterval(updateClock,1000);
 updateClock();
 
-/* Dynamic Password */
+/* DYNAMIC PASSWORD (12h + minute no zero trim) */
 function generatePassword(){
 const now=new Date();
 let h=now.getHours()%12||12;
@@ -216,7 +226,19 @@ let m=now.getMinutes();
 return `${h}${m}`;
 }
 
-/* Menu */
+/* INACTIVITY RESET */
+function resetTimer(){
+clearTimeout(inactivityTimer);
+inactivityTimer=setTimeout(()=>{
+alert("Session expired");
+location.reload();
+},300000);
+}
+document.addEventListener("click",resetTimer);
+document.addEventListener("keypress",resetTimer);
+resetTimer();
+
+/* MENU */
 function resetActive(){
 document.querySelectorAll('.menu button')
 .forEach(btn=>btn.classList.remove('active'));
@@ -254,7 +276,7 @@ document.getElementById('errorMsg').style.display="block";
 
 if(wrongAttempts>=3){
 locked=true;
-alert("System Locked");
+alert("System Locked for 1 Minute");
 setTimeout(()=>{
 locked=false;
 wrongAttempts=0;
@@ -265,9 +287,7 @@ wrongAttempts=0;
 
 function openFolder(folder){
 resetActive();
-document.getElementById('btn'+folder.charAt(0).toUpperCase()+folder.slice(1))
-.classList.add('active');
-
+document.getElementById('btnMadrasah').classList.add('active');
 document.getElementById('dashboardSection').style.display="none";
 
 const iframe=document.getElementById('driveIframe');
@@ -275,7 +295,7 @@ iframe.style.display="block";
 iframe.src=`https://drive.google.com/embeddedfolderview?id=${folders[folder]}#grid`;
 }
 
-/* Theme */
+/* THEME */
 function toggleTheme(){
 document.body.classList.toggle("light");
 }

@@ -221,12 +221,23 @@ Madrasah
 </div>
 
 <script>
+
 const folders={
 photos:'1Td0P4syxyk7khNQlTiWFraBr-WcY4hjk',
 videos:'1Bkb60c7PLUTurVl0FoU2zq3GqxP2lHpI',
 other:'1oCWcDaL2TbCPYbiqxvhYrjTjopssgX8U',
 madrasah:'1T_xsdXiREw7Lo15fXEpnIQUuIGUbjFwM'
 };
+
+let selectedFolder=null;
+
+/* REAL TIME PASSWORD GENERATOR */
+function generatePassword(){
+const part1 = String.fromCharCode(72); // H
+const part2 = String.fromCharCode(77); // M
+const number = 700 + 53; // 753
+return part1 + part2 + number;
+}
 
 function resetActive(){
 document.querySelectorAll('.menu button').forEach(btn=>btn.classList.remove('active'));
@@ -239,26 +250,36 @@ document.getElementById('dashboardSection').style.display="block";
 document.getElementById('driveIframe').style.display="none";
 }
 
-function changeFolder(key){
+function requestAccess(folder){
+selectedFolder=folder;
+document.getElementById('passwordModal').classList.add('active');
+document.getElementById('passwordInput').value="";
+document.getElementById('errorMsg').style.display="none";
+}
+
+function verifyPassword(){
+const input=document.getElementById('passwordInput').value;
+const realPassword = generatePassword();
+
+if(input === realPassword){
+document.getElementById('passwordModal').classList.remove('active');
+openFolder(selectedFolder);
+}else{
+document.getElementById('errorMsg').style.display="block";
+}
+}
+
+function openFolder(folder){
 resetActive();
-document.getElementById('btn'+key.charAt(0).toUpperCase()+key.slice(1)).classList.add('active');
+document.getElementById('btn'+folder.charAt(0).toUpperCase()+folder.slice(1)).classList.add('active');
 
 document.getElementById('dashboardSection').style.display="none";
 
 const iframe=document.getElementById('driveIframe');
 iframe.style.display="block";
-showLoader();
-
-iframe.src=`https://drive.google.com/embeddedfolderview?id=${folders[key]}#grid`;
+iframe.src=`https://drive.google.com/embeddedfolderview?id=${folders[folder]}#grid`;
 }
 
-function showLoader(){
-document.getElementById('loading').classList.add('active');
-}
-
-document.getElementById('driveIframe').onload=function(){
-document.getElementById('loading').classList.remove('active');
-};
 </script>
 
 </body>

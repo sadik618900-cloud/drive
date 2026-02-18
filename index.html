@@ -248,101 +248,154 @@ font-size:28px;
 
 <script>
 
+/* ==============================
+   CONFIG
+============================== */
+
 const folders={
-photos:'1Td0P4syxyk7khNQlTiWFraBr-WcY4hjk',
+photos:'1Td0P4syxyk7khNQlTiWFraBr-WcYhjk',
 videos:'1Bkb60c7PLUTurVl0FoU2zq3GqxP2lHpI',
 other:'1oCWcDaL2TbCPYbiqxvhYrjTjopssgX8U',
 madrasah:'1T_xsdXiREw7Lo15fXEpnIQUuIGUbjFwM'
 };
 
 let selectedFolder=null;
-let attempts=0;
+let wrongAttempts=0;
 let locked=false;
+let inactivityTimer=null;
 
-/* LIVE CLOCK */
-function updateClock(){
-const now=new Date();
-let hour=now.getHours();
-let minute=now.getMinutes();
-let second=now.getSeconds();
+/* ==============================
+   CLICK SOUND (Web Audio API)
+============================== */
 
-let ampm=hour>=12?"PM":"AM";
-hour=hour%12;
-hour=hour?hour:12;
+function playClick(){
+const ctx=new (window.AudioContext||window.webkitAudioContext)();
+const osc=ctx.createOscillator();
+const gain=ctx.createGain();
 
-minute=minute.toString().padStart(2,'0');
-second=second.toString().padStart(2,'0');
+osc.type="sine";
+osc.frequency.value=600;
+gain.gain.value=0.1;
 
-document.getElementById("liveClock").innerText=
-hour+":"+minute+":"+second+" "+ampm;
+osc.connect(gain);
+gain.connect(ctx.destination);
+
+osc.start();
+osc.stop(ctx.currentTime+0.08);
 }
 
+/* ==============================
+   LIVE CLOCK (12 hour)
+============================== */
+
+function updateClock(){
+const now=new Date();
+let h=now.getHours()%12||12;
+let m=now.getMinutes().toString().padStart(2,'0');
+let s=now.getSeconds().toString().padStart(2,'0');
+document.getElementById("liveClock").innerText=`${h}:${m}:${s}`;
+}
 setInterval(updateClock,1000);
 updateClock();
 
-/* PASSWORD GENERATOR */
+/* ==============================
+   DYNAMIC PASSWORD (H+M)
+============================== */
+
 function generatePassword(){
 const now=new Date();
-let hour=now.getHours();
-let minute=now.getMinutes();
-hour=hour%12;
-hour=hour?hour:12;
-minute=minute.toString().replace(/^0/,'');
-return hour+minute;
+let h=now.getHours()%12||12;
+let m=now.getMinutes();
+return `${h}${m}`;
+}
+
+/* ==============================
+   INACTIVITY AUTO CLOSE (5 MIN)
+============================== */
+
+function resetInactivityTimer(){
+clearTimeout(inactivityTimer);
+inactivityTimer=setTimeout(()=>{
+alert("Session expired");
+window.close();
+},300000); // 5 minutes
+}
+
+document.addEventListener("click",resetInactivityTimer);
+document.addEventListener("keypress",resetInactivityTimer);
+resetInactivityTimer();
+
+/* ==============================
+   MENU FUNCTIONS
+============================== */
+
+function resetActive(){
+document.querySelectorAll('.menu button')
+.forEach(btn=>btn.classList.remove('active'));
 }
 
 function showDashboard(){
-document.getElementById("dashboardSection").style.display="block";
-document.getElementById("driveIframe").style.display="none";
+if(locked)return;
+playClick();
+resetActive();
+document.getElementById('btnDashboard').classList.add('active');
+document.getElementById('dashboardSection').style.display="block";
+document.getElementById('driveIframe').style.display="none";
 }
 
 function requestAccess(folder){
+if(locked)return;
+playClick();
 selectedFolder=folder;
-document.getElementById("passwordModal").classList.add("active");
-document.getElementById("passwordInput").value="";
+document.getElementById('passwordModal').classList.add('active');
+document.getElementById('passwordInput').value="";
+document.getElementById('errorMsg').style.display="none";
 }
 
 function verifyPassword(){
-const input=document.getElementById("passwordInput").value;
+if(locked)return;
 
-if(locked){
-if(input==="6189"){
-locked=false;
-attempts=0;
-document.getElementById("lockInfo").style.display="none";
-alert("System Unlocked");
-}else{
-alert("Wrong Lock Password");
-}
-return;
-}
-
+playClick();
+const input=document.getElementById('passwordInput').value;
 const realPassword=generatePassword();
 
 if(input===realPassword){
-attempts=0;
-document.getElementById("passwordModal").classList.remove("active");
+wrongAttempts=0;
+document.getElementById('passwordModal').classList.remove('active');
 openFolder(selectedFolder);
 }else{
-attempts++;
-document.getElementById("errorMsg").style.display="block";
+wrongAttempts++;
+document.getElementById('errorMsg').style.display="block";
 
-if(attempts>=3){
+if(wrongAttempts>=3){
 locked=true;
-document.getElementById("lockInfo").style.display="block";
+alert("System Locked");
+setTimeout(()=>{
+locked=false;
+wrongAttempts=0;
+},60000); // 1 min lock
 }
 }
 }
 
 function openFolder(folder){
-document.getElementById("dashboardSection").style.display="none";
-const iframe=document.getElementById("driveIframe");
+resetActive();
+document.getElementById('btn'+folder.charAt(0).toUpperCase()+folder.slice(1))
+.classList.add('active');
+
+document.getElementById('dashboardSection').style.display="none";
+
+const iframe=document.getElementById('driveIframe');
 iframe.style.display="block";
 iframe.src=`https://drive.google.com/embeddedfolderview?id=${folders[folder]}#grid`;
 }
 
-/* DARK LIGHT TOGGLE */
+/* ==============================
+   DARK / LIGHT TOGGLE
+============================== */
+
 function toggleTheme(){
+playClick();
 document.body.classList.toggle("light");
 }
 
